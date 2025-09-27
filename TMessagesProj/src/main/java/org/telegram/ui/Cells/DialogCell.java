@@ -1974,20 +1974,21 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
             promoDialog = false;
             MessagesController messagesController = MessagesController.getInstance(currentAccount);
             if (dialogsType == DialogsActivity.DIALOGS_TYPE_DEFAULT && messagesController.isPromoDialog(currentDialogId, true)) {
-                drawPinBackground = true;
-                promoDialog = true;
-                if (messagesController.promoDialogType == MessagesController.PROMO_TYPE_PROXY) {
-                    timeString = getString(R.string.UseProxySponsor);
-                } else if (messagesController.promoDialogType == MessagesController.PROMO_TYPE_PSA) {
-                    timeString = getString("PsaType_" + messagesController.promoPsaType);
-                    if (TextUtils.isEmpty(timeString)) {
-                        timeString = getString(R.string.PsaTypeDefault);
-                    }
-                    if (!TextUtils.isEmpty(messagesController.promoPsaMessage)) {
-                        messageString = messagesController.promoPsaMessage;
-                        thumbsCount = 0;
-                    }
-                }
+                messagesController.hidePromoDialog();
+//                drawPinBackground = true;
+//                promoDialog = true;
+//                if (messagesController.promoDialogType == MessagesController.PROMO_TYPE_PROXY) {
+//                    timeString = getString(R.string.UseProxySponsor);
+//                } else if (messagesController.promoDialogType == MessagesController.PROMO_TYPE_PSA) {
+//                    timeString = getString("PsaType_" + messagesController.promoPsaType);
+//                    if (TextUtils.isEmpty(timeString)) {
+//                        timeString = getString(R.string.PsaTypeDefault);
+//                    }
+//                    if (!TextUtils.isEmpty(messagesController.promoPsaMessage)) {
+//                        messageString = messagesController.promoPsaMessage;
+//                        thumbsCount = 0;
+//                    }
+//                }
             }
 
             if (currentDialogFolderId != 0) {

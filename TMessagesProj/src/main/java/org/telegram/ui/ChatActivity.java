@@ -4277,7 +4277,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             closeTopicItem = headerItem.lazilyAddSubItem(topic_close, R.drawable.msg_topic_close, LocaleController.getString(R.string.CloseTopic));
             closeTopicItem.setVisibility(currentChat != null && ChatObject.canManageTopic(currentAccount, currentChat, forumTopic) && forumTopic != null && !forumTopic.closed ? View.VISIBLE : View.GONE);
         }
-        menu.setVisibility(inMenuMode ? View.GONE : View.VISIBLE);
+        menu.setVisibility(inMenuMode ? View.GONE : View.GONE);
 
         updateTitle(false);
         avatarContainer.updateOnlineCount();

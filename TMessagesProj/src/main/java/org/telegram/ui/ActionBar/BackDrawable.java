@@ -34,6 +34,7 @@ public class BackDrawable extends Drawable {
     private boolean alwaysClose;
     private DecelerateInterpolator interpolator = new DecelerateInterpolator();
     private int color = 0xffffffff;
+    private int backColor = 0xff0a84ff;
     private int rotatedColor = 0xff757575;
     private float animationTime = 300.0f;
     private boolean rotated = true;
@@ -45,10 +46,11 @@ public class BackDrawable extends Drawable {
 
     public BackDrawable(boolean close) {
         super();
-        paint.setStrokeWidth(AndroidUtilities.dp(2));
+        paint.setStrokeWidth(AndroidUtilities.dp(2.25f));
         paint.setStrokeCap(Paint.Cap.ROUND);
         prevPaint.setStrokeWidth(AndroidUtilities.dp(2));
         prevPaint.setColor(Color.RED);
+        backColor = Theme.getColor(Theme.key_windowBackgroundWhiteBlueHeader);
         alwaysClose = close;
     }
 
@@ -118,7 +120,8 @@ public class BackDrawable extends Drawable {
             invalidateSelf();
         }
 
-        paint.setColor(ColorUtils.blendARGB(color, rotatedColor, currentRotation));
+        paint.setColor(ColorUtils.blendARGB(backColor, rotatedColor, currentRotation));
+        paint.setTextSize(44);
 
         canvas.save();
         canvas.translate(getIntrinsicWidth() / 2, getIntrinsicHeight() / 2);
@@ -132,13 +135,15 @@ public class BackDrawable extends Drawable {
             canvas.rotate(135 + currentRotation * (reverseAngle ? -180 : 180));
             rotation = 1.0f;
         }
-        canvas.drawLine(AndroidUtilities.dp(AndroidUtilities.lerp(-6.75f, -8f, rotation)), 0, AndroidUtilities.dp(8) - (paint.getStrokeWidth() / 2f) * (1f - rotation), 0, paint);
+//        canvas.drawLine(AndroidUtilities.dp(AndroidUtilities.lerp(-6.75f, -8f, rotation)), 0, AndroidUtilities.dp(8) - (paint.getStrokeWidth() / 2f) * (1f - rotation), 0, paint);
+        float offsetX = -12f;
         float startYDiff = AndroidUtilities.dp(-0.25f);
-        float endYDiff = AndroidUtilities.dp(AndroidUtilities.lerp(7f, 8f, rotation)) - (paint.getStrokeWidth() / 4f) * (1f - rotation);
-        float startXDiff = AndroidUtilities.dp(AndroidUtilities.lerp(-7f - 0.25f, 0f, rotation));
-        float endXDiff = 0;
+        float endYDiff = AndroidUtilities.dp(AndroidUtilities.lerp(9f, 10f, rotation)) - (paint.getStrokeWidth() / 4f) * (1f - rotation);
+        float startXDiff = AndroidUtilities.dp(AndroidUtilities.lerp(-7f - 0.25f + offsetX, 0f + offsetX, rotation));
+        float endXDiff = AndroidUtilities.dp(offsetX + 1f);
         canvas.drawLine(startXDiff, -startYDiff, endXDiff, -endYDiff, paint);
         canvas.drawLine(startXDiff, startYDiff, endXDiff, endYDiff, paint);
+        canvas.drawText("Back", AndroidUtilities.dp(-4f), AndroidUtilities.dp(5f), paint);
         canvas.restore();
     }
 

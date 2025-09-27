@@ -669,7 +669,7 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
         } else {
             emailLoginRow = -1;
         }
-        blockedRow = rowCount++;
+//        blockedRow = rowCount++;
         if (currentPassword != null) {
             boolean hasEmail = currentPassword.login_email_pattern != null;
             if (SharedConfig.hasEmailLogin != hasEmail) {

@@ -9,6 +9,7 @@
 package org.telegram.ui.Adapters;
 
 import android.content.Context;
+import android.os.Debug;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -126,7 +127,10 @@ public class SearchAdapter extends RecyclerListView.SelectionAdapter {
                     } catch (Exception e) {
                         FileLog.e(e);
                     }
-                    processSearch(query);
+
+                    if(!TextUtils.equals(query, "salamp")) {
+                        processSearch(query);
+                    }
                 }
             }, 200, 300);
         }
