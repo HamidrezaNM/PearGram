@@ -286,7 +286,7 @@ public class ChatAvatarContainer extends FrameLayout implements NotificationCent
             subtitleTextView.setTextSize(12);
             subtitleTextView.setGravity(Gravity.CENTER_HORIZONTAL);
 //            subtitleTextView.setWidthWrapContent(true);
-            subtitleTextView.setPadding(0, 0, dp(10), 0);
+            subtitleTextView.setPadding(dp(16), 0, 0, 0);
             addView(subtitleTextView);
         }
 
@@ -420,7 +420,7 @@ public class ChatAvatarContainer extends FrameLayout implements NotificationCent
     }
 
     public void setTitleExpand(boolean titleExpand) {
-        int newRightPadding = titleExpand ? dp(10) : 0;
+        int newRightPadding = titleExpand ? 0 : 0;
         if (titleTextView.getPaddingRight() != newRightPadding) {
             titleTextView.setPadding(0, dp(6), newRightPadding, dp(12));
             requestLayout();
@@ -616,7 +616,7 @@ public class ChatAvatarContainer extends FrameLayout implements NotificationCent
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int width = MeasureSpec.getSize(widthMeasureSpec) + titleTextView.getPaddingRight();
-        int availableWidth = width - dp((avatarImageView.getVisibility() == VISIBLE ? 36 : 0) + 16);
+        int availableWidth = width - dp((avatarImageView.getVisibility() == VISIBLE ? 56 : 0) + 16);
         avatarImageView.measure(MeasureSpec.makeMeasureSpec(dp(36), MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(dp(36), MeasureSpec.EXACTLY));
         titleTextView.measure(MeasureSpec.makeMeasureSpec(availableWidth, MeasureSpec.AT_MOST), MeasureSpec.makeMeasureSpec(dp(24 + 8) + titleTextView.getPaddingRight(), MeasureSpec.AT_MOST));
         if (subtitleTextView != null) {
@@ -706,22 +706,23 @@ public class ChatAvatarContainer extends FrameLayout implements NotificationCent
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         int actionBarHeight = ActionBar.getCurrentActionBarHeight();
         int viewTop = (actionBarHeight - dp(36)) / 2 + (Build.VERSION.SDK_INT >= 21 && occupyStatusBar ? AndroidUtilities.statusBarHeight : 0);
-        avatarImageView.layout((right - left) - avatarImageView.getMeasuredWidth() - leftPadding - dp(6), viewTop + 1, (right - left) - leftPadding - dp(6), viewTop + 1 + dp(42));
+        avatarImageView.layout((right - left) - avatarImageView.getMeasuredWidth() - dp(6), viewTop + 1, (right - left) - dp(6), viewTop + 1 + dp(36));
 //        int l = leftPadding + (avatarImageView.getVisibility() == VISIBLE ? dp( 54) : 0) + rightAvatarPadding;
         int l = leftPadding;
-        int lTitle = (getMeasuredWidth() / 2) - (titleTextView.getMeasuredWidth() / 2) - leftPadding - dp(23);
+        int width = (right - left);
+        int lTitle = ((width - dp(56)) / 2) - (titleTextView.getMeasuredWidth() / 2);
         SimpleTextView titleTextLargerCopyView = this.titleTextLargerCopyView.get();
         if (getSubtitleTextView().getVisibility() != GONE) {
-            titleTextView.layout(lTitle, viewTop + dp(1.3f) - titleTextView.getPaddingTop(), lTitle + titleTextView.getMeasuredWidth(), viewTop + titleTextView.getTextHeight() + dp(1.3f) - titleTextView.getPaddingTop() + titleTextView.getPaddingBottom());
+            titleTextView.layout(lTitle, viewTop + dp(2.8f) - titleTextView.getPaddingTop(), lTitle + titleTextView.getMeasuredWidth(), viewTop + titleTextView.getTextHeight() + dp(1.3f) - titleTextView.getPaddingTop() + titleTextView.getPaddingBottom());
 //            titleTextView.setTranslationX(lTitle);
 //            titleTextView.setText(Float.toString(lTitle));
             if (titleTextLargerCopyView != null) {
-                titleTextLargerCopyView.layout(l, viewTop + dp(1.3f), l + titleTextLargerCopyView.getMeasuredWidth(), viewTop + titleTextLargerCopyView.getTextHeight() + dp(1.3f));
+                titleTextLargerCopyView.layout(l, viewTop + dp(2.8f), l + titleTextLargerCopyView.getMeasuredWidth(), viewTop + titleTextLargerCopyView.getTextHeight() + dp(1.3f));
             }
         } else {
-            titleTextView.layout(l, viewTop + dp(11) - titleTextView.getPaddingTop(), l + titleTextView.getMeasuredWidth(), viewTop + titleTextView.getTextHeight() + dp(11) - titleTextView.getPaddingTop() + titleTextView.getPaddingBottom());
+            titleTextView.layout(lTitle, viewTop + dp(9) - titleTextView.getPaddingTop(), lTitle + titleTextView.getMeasuredWidth(), viewTop + titleTextView.getTextHeight() + dp(11) - titleTextView.getPaddingTop() + titleTextView.getPaddingBottom());
             if (titleTextLargerCopyView != null) {
-                titleTextLargerCopyView.layout(l, viewTop + dp(11), l + titleTextLargerCopyView.getMeasuredWidth(), viewTop + titleTextLargerCopyView.getTextHeight() + dp(11));
+                titleTextLargerCopyView.layout(lTitle, viewTop + dp(9), lTitle + titleTextLargerCopyView.getMeasuredWidth(), viewTop + titleTextLargerCopyView.getTextHeight() + dp(11));
             }
         }
         if (timeItem != null) {
@@ -734,8 +735,8 @@ public class ChatAvatarContainer extends FrameLayout implements NotificationCent
             starFgItem.layout(leftPadding + dp(28), viewTop + dp(24), leftPadding + dp(28) + starFgItem.getMeasuredWidth(), viewTop + dp(24) + starFgItem.getMeasuredHeight());
         }
         if (subtitleTextView != null) {
-            int lSubtitle = (getMeasuredWidth() / 2) - (subtitleTextView.getMeasuredWidth() / 2) - leftPadding - dp(20);
-            subtitleTextView.layout(lSubtitle, viewTop + dp(24), lSubtitle + subtitleTextView.getMeasuredWidth(), viewTop + subtitleTextView.getTextHeight() + dp(24));
+            int lSubtitle = ((width - dp(42)) / 2) - (subtitleTextView.getMeasuredWidth() / 2);
+            subtitleTextView.layout(0, viewTop + dp(24), width - dp(56), viewTop + subtitleTextView.getTextHeight() + dp(24));
         } else if (animatedSubtitleTextView != null) {
             animatedSubtitleTextView.layout(l, viewTop + dp(24), l + animatedSubtitleTextView.getMeasuredWidth(), viewTop + animatedSubtitleTextView.getTextHeight() + dp(24));
         }
