@@ -689,6 +689,7 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
             if (contentSettings != null && contentSettings.sensitive_can_change) {
 //                sensitiveContentRow = rowCount++;
             }
+            chatBlurRow = rowCount++;
             sendByEnterRow = rowCount++;
             distanceRow = rowCount++;
             otherSectionRow = rowCount++;

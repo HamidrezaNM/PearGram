@@ -1389,7 +1389,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
                     dt = 18;
                 }
                 lastFrameTime = newTime;
-                float duration = preview && open ? 190.0f : 150.0f;
+                float duration = preview && open ? 190.0f : 500.0f;
                 animationProgress += dt / duration;
                 if (animationProgress > 1.0f) {
                     animationProgress = 1.0f;
@@ -1425,11 +1425,12 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
                         interpolated = CubicBezierInterpolator.EASE_OUT_QUINT.getInterpolation(animationProgress);
                     }
                 } else {
-                    interpolated = decelerateInterpolator.getInterpolation(animationProgress);
+                    interpolated = new CubicBezierInterpolator(0, 1, .5, 1).getInterpolation(animationProgress);
                 }
                 if (open) {
                     float clampedInterpolated = MathUtils.clamp(interpolated, 0, 1);
-                    containerView.setAlpha(clampedInterpolated);
+                    containerView.setAlpha(1f);
+                    containerViewBack.setAlpha(1.0f - clampedInterpolated * .5f);
                     if (preview) {
                         containerView.setScaleX(0.7f + 0.3f * interpolated);
                         containerView.setScaleY(0.7f + 0.3f * interpolated);
@@ -1444,11 +1445,13 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
                         containerView.invalidate();
                         invalidate();
                     } else {
-                        containerView.setTranslationX(dp(48) * (1.0f - interpolated));
+                        containerView.setTranslationX(containerView.getMeasuredWidth() * (1.0f - interpolated));
+                        containerViewBack.setTranslationX(containerViewBack.getMeasuredWidth() * (-interpolated) * .3f);
                     }
                 } else {
                     float clampedReverseInterpolated = MathUtils.clamp(1f - interpolated, 0, 1);
-                    containerViewBack.setAlpha(clampedReverseInterpolated);
+                    containerViewBack.setAlpha(1f);
+                    containerView.setAlpha(0.5f + (1.0f - clampedReverseInterpolated) * .5f);
                     if (preview) {
                         containerViewBack.setScaleX(0.9f + 0.1f * (1.0f - interpolated));
                         containerViewBack.setScaleY(0.9f + 0.1f * (1.0f - interpolated));
@@ -1459,7 +1462,8 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
                         containerView.invalidate();
                         invalidate();
                     } else {
-                        containerViewBack.setTranslationX(dp(48) * interpolated);
+                        containerViewBack.setTranslationX(containerViewBack.getMeasuredWidth() * interpolated);
+                        containerView.setTranslationX(containerView.getMeasuredWidth() * (1.0f - interpolated) * -0.3f);
                     }
                 }
                 if (animationProgress < 1) {

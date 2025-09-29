@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "236688059516",
-    "project_id": "magram-7084a",
-    "storage_bucket": "magram-7084a.firebasestorage.app"
+    "project_number": "1052250206569",
+    "project_id": "peargram-ba310",
+    "storage_bucket": "peargram-ba310.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:236688059516:android:5b275cbbaa0e9eddd3edf9",
+        "mobilesdk_app_id": "1:1052250206569:android:3df12d05170ef307594df8",
         "android_client_info": {
-          "package_name": "org.telegram.messenger"
+          "package_name": "com.hmdnjf.peargram"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBIWZYXiEj4eZk2h3kiSyt1h_tyVwyo1zY"
+          "current_key": "AIzaSyA43DjgD3qetWAkNSBlwUraC5M1xG-qx9U"
         }
       ],
       "services": {
@@ -26,15 +26,34 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:236688059516:android:e35e401fa91ff4f2d3edf9",
+        "mobilesdk_app_id": "1:1052250206569:android:0da8bb1f955800f1594df8",
         "android_client_info": {
-          "package_name": "org.telegram.messenger.beta"
+          "package_name": "COM.HMDNJF.PEARGRAM.BETA"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBIWZYXiEj4eZk2h3kiSyt1h_tyVwyo1zY"
+          "current_key": "AIzaSyA43DjgD3qetWAkNSBlwUraC5M1xG-qx9U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1052250206569:android:ac833bc77677d3ab594df8",
+        "android_client_info": {
+          "package_name": "org.telegram.messenger"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA43DjgD3qetWAkNSBlwUraC5M1xG-qx9U"
         }
       ],
       "services": {

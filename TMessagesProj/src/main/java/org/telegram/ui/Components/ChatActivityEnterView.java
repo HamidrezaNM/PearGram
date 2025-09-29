@@ -2648,6 +2648,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
             attachButton.setScaleType(ImageView.ScaleType.CENTER);
             attachButton.setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_chat_messagePanelIcons), PorterDuff.Mode.MULTIPLY));
             attachButton.setImageResource(R.drawable.msg_input_attach2);
+            attachButton.setRotation(180f);
             if (Build.VERSION.SDK_INT >= 21) {
                 attachButton.setBackground(Theme.createSelectorDrawable(getThemedColor(Theme.key_listSelector)));
             }
@@ -3572,7 +3573,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
         recordedAudioPanel.setFocusable(true);
         recordedAudioPanel.setFocusableInTouchMode(true);
         recordedAudioPanel.setClickable(true);
-        messageEditTextContainer.addView(recordedAudioPanel, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.BOTTOM));
+        messageEditTextContainer.addView(recordedAudioPanel, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 32, Gravity.BOTTOM));
 
         recordDeleteImageView = new RLottieImageView(getContext());
         recordDeleteImageView.setScaleType(ImageView.ScaleType.CENTER);
@@ -3968,7 +3969,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
             }
         });
         senderSelectView.setVisibility(GONE);
-        messageEditTextContainer.addView(senderSelectView, LayoutHelper.createFrame(32, 32, Gravity.BOTTOM | Gravity.LEFT, 10, 8, 10, 8));
+        textFieldContainer.addView(senderSelectView, LayoutHelper.createFrame(32, 32, Gravity.BOTTOM | Gravity.LEFT, 10, 8, 10, 8));
     }
 
     private void createBotCommandsMenuButton() {
@@ -5223,12 +5224,13 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
 
         messageEditBackground.setShape(GradientDrawable.RECTANGLE);
         messageEditBackground.setColor(getThemedColor(Theme.key_windowBackgroundWhite));
-        messageEditBackground.setCornerRadius(dp(21));
+        messageEditBackground.setCornerRadius(dp(16));
+        messageEditBackground.setStroke(dp(1), getThemedColor(Theme.key_divider));
         messageEditTextContainer.setBackground(messageEditBackground);
 
         messageEditField.setPadding(0, dp(8), 0, dp(9));
 
-        messageEditTextContainer.addView(messageEditText, 1, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.BOTTOM, 0, 0, isChat ? 50 : 2, 1.5f));
+        messageEditTextContainer.addView(messageEditText, 1, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.BOTTOM, 16, 0, isChat ? 50 : 2, 1.5f));
         messageEditText.setOnKeyListener(new OnKeyListener() {
 
             @Override
@@ -8015,7 +8017,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
             if (scheduledButton != null && scheduledButton.getTag() != null) {
                 layoutParams.rightMargin = dp(50);
             } else {
-                layoutParams.rightMargin = dp(2);
+                layoutParams.rightMargin = dp(32);
             }
         }
         layoutParams.rightMargin = Math.max(layoutParams.rightMargin, Math.max(0, sendButton.width() - dp(48)));
@@ -8924,7 +8926,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
         };
         recordPanel.setClipChildren(false);
         recordPanel.setVisibility(GONE);
-        messageEditTextContainer.addView(recordPanel, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48));
+        messageEditTextContainer.addView(recordPanel, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 32));
         recordPanel.setOnTouchListener((v, event) -> true);
         recordPanel.addView(slideText = new SlideTextView(getContext()), LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.NO_GRAVITY, 45, 0, 0, 0));
 
@@ -12735,21 +12737,27 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         if (botCommandsMenuButton != null && botCommandsMenuButton.getTag() != null) {
             botCommandsMenuButton.measure(widthMeasureSpec, heightMeasureSpec);
-            ((MarginLayoutParams) emojiButton.getLayoutParams()).leftMargin = dp(10) + (botCommandsMenuButton == null ? 0 : botCommandsMenuButton.getMeasuredWidth());
+            ((MarginLayoutParams) attachLayout.getLayoutParams()).leftMargin = dp(10) + (botCommandsMenuButton == null ? 0 : botCommandsMenuButton.getMeasuredWidth());
             if (messageEditText != null) {
-                ((MarginLayoutParams) messageEditText.getLayoutParams()).leftMargin = dp(57) + (botCommandsMenuButton == null ? 0 : botCommandsMenuButton.getMeasuredWidth());
+                ((MarginLayoutParams) messageEditField.getLayoutParams()).leftMargin = dp(57) + (botCommandsMenuButton == null ? 0 : botCommandsMenuButton.getMeasuredWidth());
             }
         } else if (senderSelectView != null && senderSelectView.getVisibility() == View.VISIBLE) {
             int width = senderSelectView.getLayoutParams().width, height = senderSelectView.getLayoutParams().height;
             senderSelectView.measure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
 //            ((MarginLayoutParams) emojiButton.getLayoutParams()).leftMargin = dp(16) + width;
+            ((MarginLayoutParams) attachLayout.getLayoutParams()).leftMargin = dp(16) + width;
             if (messageEditText != null) {
-//                ((MarginLayoutParams) messageEditText.getLayoutParams()).leftMargin = dp(63) + width;
+                ((MarginLayoutParams) messageEditField.getLayoutParams()).leftMargin = dp(63) + width;
+            }
+        } else if (notifyButton != null && notifyButton.getVisibility() == View.VISIBLE) {
+            ((MarginLayoutParams) attachLayout.getLayoutParams()).leftMargin = dp(3);
+            if (messageEditText != null) {
+                ((MarginLayoutParams) messageEditField.getLayoutParams()).leftMargin = dp(96);
             }
         } else {
-            ((MarginLayoutParams) emojiButton.getLayoutParams()).leftMargin = dp(3);
+            ((MarginLayoutParams) attachLayout.getLayoutParams()).leftMargin = dp(3);
             if (messageEditText != null) {
-                ((MarginLayoutParams) messageEditText.getLayoutParams()).leftMargin = dp(16);
+                ((MarginLayoutParams) messageEditField.getLayoutParams()).leftMargin = dp(50);
             }
         }
         updateBotCommandsMenuContainerTopPadding();
