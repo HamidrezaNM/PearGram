@@ -587,8 +587,10 @@
     <string name="ChannelCreator">Owner</string>
     <string name="ChannelAdministrator">Administrator</string>
     <string name="ChannelAdmin">Admin</string>
-    <string name="ChannelMute">MUTE</string>
-    <string name="ChannelUnmute">UNMUTE</string>
+    <string name="ChannelMute">Mute</string>
+    <string name="ChannelUnmute">Unmute</string>
+    <string name="ChannelMuteiOS">Mute</string>
+    <string name="ChannelUnmuteiOS">Unmute</string>
     <string name="ChannelAddAdmin">Add Admin</string>
     <string name="ChannelBlockUser">Remove User</string>
     <string name="GroupNotRestrictBoosters">Do Not Restrict Boosters</string>
@@ -4732,10 +4734,10 @@
     <string name="Replies_other">%1$d Replies</string>
     <string name="Comments_one">%1$d Comment</string>
     <string name="Comments_other">%1$d Comments</string>
-    <string name="CommentsCount_one">%1$d comment</string>
-    <string name="CommentsCount_other">%1$d comments</string>
-    <string name="CommentsNoNumber_one">comment</string>
-    <string name="CommentsNoNumber_other">comments</string>
+    <string name="CommentsCountiOS_one">%1$d Comment</string>
+    <string name="CommentsCountiOS_other">%1$d Comments</string>
+    <string name="CommentsNoNumberiOS_one">Comment</string>
+    <string name="CommentsNoNumberiOS_other">Comments</string>
     <string name="PinnedMessagesCount_one">Pinned Message</string>
     <string name="PinnedMessagesCount_other">%1$d Pinned Messages</string>
     <string name="PeopleCanJoinViaLinkCount_one">%s person can join via this link</string>

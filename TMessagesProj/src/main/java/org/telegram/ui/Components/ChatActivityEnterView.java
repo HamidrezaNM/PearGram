@@ -3584,7 +3584,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
         if (Build.VERSION.SDK_INT >= 21) {
             recordDeleteImageView.setBackgroundDrawable(Theme.createSelectorDrawable(getThemedColor(Theme.key_listSelector)));
         }
-        recordedAudioPanel.addView(recordDeleteImageView, LayoutHelper.createFrame(48, 48));
+        recordedAudioPanel.addView(recordDeleteImageView, LayoutHelper.createFrame(32, 32));
         recordDeleteImageView.setOnClickListener(v -> {
             if (runningAnimationAudio != null && runningAnimationAudio.isRunning()) {
                 return;
@@ -4006,7 +4006,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                 botCommandsMenuContainer.dismiss();
             }
         });
-        messageEditTextContainer.addView(botCommandsMenuButton, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, 32, Gravity.BOTTOM | Gravity.LEFT, 10, 8, 10, 8));
+        textFieldContainer.addView(botCommandsMenuButton, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, 32, Gravity.BOTTOM | Gravity.LEFT, 10, 8, 10, 8));
         AndroidUtilities.updateViewVisibilityAnimated(botCommandsMenuButton, false, 1f, false);
         botCommandsMenuButton.setExpanded(true, false);
     }
@@ -4019,7 +4019,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
         botWebViewButton.setVisibility(GONE);
         createBotCommandsMenuButton();
         botWebViewButton.setBotMenuButton(botCommandsMenuButton);
-        messageEditTextContainer.addView(botWebViewButton, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.BOTTOM));
+        textFieldContainer.addView(botWebViewButton, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.BOTTOM));
     }
 
     private void createRecordCircle() {
@@ -9235,7 +9235,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
             openKeyboard();
             if (messageEditText != null) {
                 FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) messageEditText.getLayoutParams();
-                layoutParams.rightMargin = dp(4);
+                layoutParams.rightMargin = dp(32);
                 messageEditText.setLayoutParams(layoutParams);
             }
             if (recordedAudioPanel != null) {
@@ -12755,7 +12755,9 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                 ((MarginLayoutParams) messageEditField.getLayoutParams()).leftMargin = dp(96);
             }
         } else {
-            ((MarginLayoutParams) attachLayout.getLayoutParams()).leftMargin = dp(3);
+            if(attachLayout != null) {
+                ((MarginLayoutParams) attachLayout.getLayoutParams()).leftMargin = dp(3);
+            }
             if (messageEditText != null) {
                 ((MarginLayoutParams) messageEditField.getLayoutParams()).leftMargin = dp(50);
             }

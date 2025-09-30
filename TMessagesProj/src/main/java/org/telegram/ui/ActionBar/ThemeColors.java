@@ -653,7 +653,8 @@ public class ThemeColors {
         defaultColors[key_chat_outTextSelectionCursor] = 0xFF419FE8;
         defaultColors[key_chat_outBubbleLocationPlaceholder] = 0x1e307311;
         defaultColors[key_chat_inBubbleLocationPlaceholder] = 0x1e506373;
-        defaultColors[key_chat_BlurAlpha] = 0xFF000000;
+        defaultColors[key_chat_BlurAlpha] = 0xB2000000;
+        defaultColors[key_chat_BlurAlphaSlow] = 0xB2000000;
         defaultColors[key_chat_editMediaButton] = 0xff1A9CFF;
 
         defaultColors[key_statisticChartSignature] = 0x7f252529;

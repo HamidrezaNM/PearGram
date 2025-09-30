@@ -121,7 +121,7 @@ public class ActionBar extends FrameLayout {
     private Runnable lastRunnable;
     private boolean titleOverlayShown;
     private Runnable titleActionRunnable;
-    private boolean castShadows = true;
+    private boolean castShadows = false;
 
     protected boolean isSearchFieldVisible;
     public float searchFieldVisibleAlpha;

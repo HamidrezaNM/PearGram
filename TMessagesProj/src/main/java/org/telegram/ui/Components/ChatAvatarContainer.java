@@ -22,6 +22,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.Layout;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.view.Gravity;
@@ -274,7 +275,8 @@ public class ChatAvatarContainer extends FrameLayout implements NotificationCent
             animatedSubtitleTextView.setTextColor(getThemedColor(Theme.key_actionBarDefaultSubtitle));
             animatedSubtitleTextView.setTag(Theme.key_actionBarDefaultSubtitle);
             animatedSubtitleTextView.setTextSize(dp(14));
-            animatedSubtitleTextView.setGravity(Gravity.LEFT);
+            animatedSubtitleTextView.setGravity(Gravity.CENTER_HORIZONTAL);
+            animatedSubtitleTextView.setTextAlignment(TEXT_ALIGNMENT_CENTER);
             animatedSubtitleTextView.setPadding(0, 0, dp(10), 0);
             animatedSubtitleTextView.setTranslationY(-dp(1));
             addView(animatedSubtitleTextView);
@@ -285,8 +287,9 @@ public class ChatAvatarContainer extends FrameLayout implements NotificationCent
             subtitleTextView.setTag(Theme.key_actionBarDefaultSubtitle);
             subtitleTextView.setTextSize(12);
             subtitleTextView.setGravity(Gravity.CENTER_HORIZONTAL);
-//            subtitleTextView.setWidthWrapContent(true);
             subtitleTextView.setPadding(dp(16), 0, 0, 0);
+            subtitleTextView.setTextAlignment(TEXT_ALIGNMENT_CENTER);
+            subtitleTextView.setAlignment(Layout.Alignment.ALIGN_CENTER);
             addView(subtitleTextView);
         }
 
@@ -738,7 +741,7 @@ public class ChatAvatarContainer extends FrameLayout implements NotificationCent
             int lSubtitle = ((width - dp(42)) / 2) - (subtitleTextView.getMeasuredWidth() / 2);
             subtitleTextView.layout(0, viewTop + dp(24), width - dp(56), viewTop + subtitleTextView.getTextHeight() + dp(24));
         } else if (animatedSubtitleTextView != null) {
-            animatedSubtitleTextView.layout(l, viewTop + dp(24), l + animatedSubtitleTextView.getMeasuredWidth(), viewTop + animatedSubtitleTextView.getTextHeight() + dp(24));
+            animatedSubtitleTextView.layout(0, viewTop + dp(24), width - dp(56), viewTop + animatedSubtitleTextView.getTextHeight() + dp(24));
         }
         SimpleTextView subtitleTextLargerCopyView = this.subtitleTextLargerCopyView.get();
         if (subtitleTextLargerCopyView != null) {

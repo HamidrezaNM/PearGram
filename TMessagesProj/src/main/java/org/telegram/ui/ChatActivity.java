@@ -11319,9 +11319,9 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
         pinnedMessageEnterOffset = -AndroidUtilities.dp(50);
         pinnedMessageView.setVisibility(View.GONE);
         pinnedMessageView.setBackgroundResource(R.drawable.blockpanel);
-        pinnedMessageView.backgroundColor = getThemedColor(Theme.key_chat_topPanelBackground);
+        pinnedMessageView.backgroundColor = getThemedColor(Theme.key_actionBarDefault);
         pinnedMessageView.backgroundPaddingBottom = AndroidUtilities.dp(2);
-        pinnedMessageView.getBackground().mutate().setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_chat_topPanelBackground), PorterDuff.Mode.MULTIPLY));
+        pinnedMessageView.getBackground().mutate().setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_actionBarDefault), PorterDuff.Mode.MULTIPLY));
         int index = 8;
         if (topChatPanelView != null && topChatPanelView.getParent() == contentView) {
             index = contentView.indexOfChild(topChatPanelView);
@@ -27105,10 +27105,10 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             showBottomOverlayProgress(false, false);
         } else if (currentUser != null && currentUser.id == UserObject.VERIFY) {
             if (!getMessagesController().isDialogMuted(dialog_id, getTopicId())) {
-                bottomOverlayChatText.setText(LocaleController.getString(R.string.ChannelMute), false);
+                bottomOverlayChatText.setText(LocaleController.getString(R.string.ChannelMuteiOS), false);
                 bottomOverlayChatText.setEnabled(true);
             } else {
-                bottomOverlayChatText.setText(LocaleController.getString(R.string.ChannelUnmute), true);
+                bottomOverlayChatText.setText(LocaleController.getString(R.string.ChannelUnmuteiOS), true);
                 bottomOverlayChatText.setEnabled(true);
             }
             showBottomOverlayProgress(false, bottomOverlayProgress.getTag() != null);
@@ -27144,10 +27144,10 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     bottomOverlayChatText.setEnabled(false);
                 } else if (!isThreadChat()) {
                     if (!getMessagesController().isDialogMuted(dialog_id, getTopicId())) {
-                        bottomOverlayChatText.setText(LocaleController.getString(R.string.ChannelMute), false);
+                        bottomOverlayChatText.setText(LocaleController.getString(R.string.ChannelMuteiOS), false);
                         bottomOverlayChatText.setEnabled(true);
                     } else {
-                        bottomOverlayChatText.setText(LocaleController.getString(R.string.ChannelUnmute), true);
+                        bottomOverlayChatText.setText(LocaleController.getString(R.string.ChannelUnmuteiOS), true);
                         bottomOverlayChatText.setEnabled(true);
                     }
                     showBottomOverlayProgress(false, bottomOverlayProgress.getTag() != null);
@@ -27198,9 +27198,9 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 }
             } else if (UserObject.isReplyUser(currentUser)) {
                 if (!getMessagesController().isDialogMuted(dialog_id, getTopicId())) {
-                    bottomOverlayChatText.setText(LocaleController.getString(R.string.ChannelMute), false);
+                    bottomOverlayChatText.setText("Mute", false);
                 } else {
-                    bottomOverlayChatText.setText(LocaleController.getString(R.string.ChannelUnmute), true);
+                    bottomOverlayChatText.setText("Unmute", true);
                 }
                 showBottomOverlayProgress(false, true);
             } else if (botUser != null && currentUser.bot && !UserObject.isDeleted(currentUser)) {
