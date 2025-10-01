@@ -136,14 +136,14 @@ public class BackDrawable extends Drawable {
             rotation = 1.0f;
         }
 //        canvas.drawLine(AndroidUtilities.dp(AndroidUtilities.lerp(-6.75f, -8f, rotation)), 0, AndroidUtilities.dp(8) - (paint.getStrokeWidth() / 2f) * (1f - rotation), 0, paint);
-        float offsetX = -12f;
+        float offsetX = -16f;
         float startYDiff = AndroidUtilities.dp(-0.25f);
         float endYDiff = AndroidUtilities.dp(AndroidUtilities.lerp(9f, 10f, rotation)) - (paint.getStrokeWidth() / 4f) * (1f - rotation);
         float startXDiff = AndroidUtilities.dp(AndroidUtilities.lerp(-7f - 0.25f + offsetX, 0f + offsetX, rotation));
         float endXDiff = AndroidUtilities.dp(offsetX + 1f);
         canvas.drawLine(startXDiff, -startYDiff, endXDiff, -endYDiff, paint);
         canvas.drawLine(startXDiff, startYDiff, endXDiff, endYDiff, paint);
-        canvas.drawText("Back", AndroidUtilities.dp(-4f), AndroidUtilities.dp(5f), paint);
+        canvas.drawText("Back", AndroidUtilities.dp(-7f), AndroidUtilities.dp(5f), paint);
         canvas.restore();
     }
 

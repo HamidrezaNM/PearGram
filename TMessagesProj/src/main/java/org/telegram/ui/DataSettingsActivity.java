@@ -54,6 +54,7 @@ import org.telegram.ui.Cells.TextSettingsCell;
 import org.telegram.ui.Components.AlertsCreator;
 import org.telegram.ui.Components.CubicBezierInterpolator;
 import org.telegram.ui.Components.LayoutHelper;
+import org.telegram.ui.Components.ListBackgroundDrawable;
 import org.telegram.ui.Components.RecyclerListView;
 import org.telegram.ui.Components.voip.VoIPHelper;
 
@@ -258,6 +259,7 @@ public class DataSettingsActivity extends BaseFragment {
     public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
         actionBar.setTitle(LocaleController.getString(R.string.DataSettings));
+        actionBar.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundGray));
         if (AndroidUtilities.isTablet()) {
             actionBar.setOccupyStatusBar(false);
         }
@@ -638,13 +640,24 @@ public class DataSettingsActivity extends BaseFragment {
 
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+            boolean isTopRow = getItemViewType(position - 1) == 2 || getItemViewType(position - 1) == 0;
+            boolean isBottomRow = getItemViewType(position + 1) == 0 || getItemViewType(position + 1) == 4;
+            boolean isShadowRow = getItemViewType(position) == 0 || getItemViewType(position) == 4;
+
+            ListBackgroundDrawable listBackgroundDrawable = new ListBackgroundDrawable(isTopRow, isBottomRow, isShadowRow);
+
+            if(isTopRow || isBottomRow || isShadowRow)
+                holder.itemView.setBackground(listBackgroundDrawable);
+            else
+                holder.itemView.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+
             switch (holder.getItemViewType()) {
                 case 0: {
-                    if (position == clearDraftsSectionRow) {
-                        holder.itemView.setBackgroundDrawable(Theme.getThemedDrawableByKey(mContext, R.drawable.greydivider_bottom, Theme.key_windowBackgroundGrayShadow));
-                    } else {
-                        holder.itemView.setBackgroundDrawable(Theme.getThemedDrawableByKey(mContext, R.drawable.greydivider, Theme.key_windowBackgroundGrayShadow));
-                    }
+//                    if (position == clearDraftsSectionRow) {
+//                        holder.itemView.setBackgroundDrawable(Theme.getThemedDrawableByKey(mContext, R.drawable.greydivider_bottom, Theme.key_windowBackgroundGrayShadow));
+//                    } else {
+//                        holder.itemView.setBackgroundDrawable(Theme.getThemedDrawableByKey(mContext, R.drawable.greydivider, Theme.key_windowBackgroundGrayShadow));
+//                    }
                     break;
                 }
                 case 6: {
@@ -728,6 +741,7 @@ public class DataSettingsActivity extends BaseFragment {
                 }
                 case 2: {
                     HeaderCell headerCell = (HeaderCell) holder.itemView;
+                    headerCell.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundGray));
                     if (position == mediaDownloadSectionRow) {
                         headerCell.setText(LocaleController.getString(R.string.AutomaticMediaDownload));
                     } else if (position == usageSectionRow) {
@@ -893,6 +907,8 @@ public class DataSettingsActivity extends BaseFragment {
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view;
+            int padding = AndroidUtilities.dp(16);
+            parent.setPadding(padding, 0, padding, 0);
             switch (viewType) {
                 case 0:
                     view = new ShadowSectionCell(mContext);
@@ -903,7 +919,7 @@ public class DataSettingsActivity extends BaseFragment {
                     break;
                 case 2:
                     view = new HeaderCell(mContext, 22);
-                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundGray));
                     break;
                 case 3:
                     view = new TextCheckCell(mContext);

@@ -248,6 +248,7 @@ import org.telegram.ui.Components.ItemOptions;
 import org.telegram.ui.Components.JoinGroupAlert;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.LinkSpanDrawable;
+import org.telegram.ui.Components.ListBackgroundDrawable;
 import org.telegram.ui.Components.MediaActivity;
 import org.telegram.ui.Components.MessagePrivateSeenView;
 import org.telegram.ui.Components.ProfileActionsView;
@@ -3002,8 +3003,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         }
                         nameTextView[1].setTextColor(Color.WHITE);
                         nameTextView[1].setPivotY(nameTextView[1].getMeasuredHeight());
-                        nameTextView[1].setScaleX(1.38f);
-                        nameTextView[1].setScaleY(1.38f);
+                        nameTextView[1].setScaleX(1.55f);
+                        nameTextView[1].setScaleY(1.55f);
                         if (scamDrawable != null) {
                             scamDrawable.setColor(Color.argb(179, 255, 255, 255));
                         }
@@ -3918,7 +3919,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         listAdapter = new ListAdapter(context);
         searchAdapter = new SearchAdapter(context);
         avatarDrawable = new AvatarDrawable();
-        avatarDrawable.setScaleSize(100f / 42f);
+        avatarDrawable.setScaleSize(100f / 36f);
         avatarDrawable.setProfile(true);
 
         fragmentView.setWillNotDraw(false);
@@ -5362,7 +5363,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 nameTextView[a].setTextColor(getThemedColor(Theme.key_actionBarDefaultTitle));
             }
             nameTextView[a].setPadding(0, AndroidUtilities.dp(6), 0, AndroidUtilities.dp(a == 0 ? 12 : 4));
-            nameTextView[a].setTextSize(18);
+            nameTextView[a].setTextSize(16);
             nameTextView[a].setGravity(Gravity.LEFT);
             nameTextView[a].setTypeface(AndroidUtilities.bold());
             nameTextView[a].setLeftDrawableTopPadding(-AndroidUtilities.dp(1.3f));
@@ -5433,7 +5434,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
             onlineTextView[a].setEllipsizeByGradient(true);
             onlineTextView[a].setTextColor(applyPeerColor(getThemedColor(Theme.key_avatar_subtitleInProfileBlue), true, null));
-            onlineTextView[a].setTextSize(14);
+            onlineTextView[a].setTextSize(12);
             onlineTextView[a].setGravity(Gravity.LEFT);
             onlineTextView[a].setAlpha(a == 0 ? 0.0f : 1.0f);
             onlineTextView[a].setPivotX(dp(8));
@@ -6301,8 +6302,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         onlineTextView[1].setTextColor(ColorUtils.blendARGB(applyPeerColor(statusColor, true, online), 0xB3FFFFFF, value));
         if (extraHeight > getHeaderOnlyExtraHeight()) {
             nameTextView[1].setPivotY(AndroidUtilities.lerp(0, nameTextView[1].getMeasuredHeight(), value));
-            nameTextView[1].setScaleX(AndroidUtilities.lerp(1f + 0.12f * diff, 1.38f, value));
-            nameTextView[1].setScaleY(AndroidUtilities.lerp(1f + 0.12f * diff, 1.38f, value));
+            nameTextView[1].setScaleX(AndroidUtilities.lerp(1f + 0.26f * diff, 1.55f, value));
+            nameTextView[1].setScaleY(AndroidUtilities.lerp(1f + 0.26f * diff, 1.55f, value));
         }
         needLayoutText(Math.min(1f, diff));
 
@@ -6342,7 +6343,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         final FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) avatarContainer.getLayoutParams();
         avatarX = listView.getMeasuredWidth() / 2f - (params.leftMargin + params.width * avatarScale * 0.5f);
         if (openAnimationInProgress) {
-            avatarX = lerp(0, avatarX, avatarAnimationProgress);
+            avatarX = lerp(listView.getMeasuredWidth() - params.width - dp(14), avatarX, avatarAnimationProgress);
         }
         avatarContainer.setTranslationX(avatarX);
     }
@@ -8159,11 +8160,11 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
         float startAvatarY = (actionBar.getOccupyStatusBar() ? AndroidUtilities.statusBarHeight : 0)
                 + ActionBar.getCurrentActionBarHeight() / 2f
-                - 21 * AndroidUtilities.density
+                - 18 * AndroidUtilities.density
                 + actionBar.getTranslationY();
 
-        avatarScale = lerp(42f / 100f, backwardInitialValues[0], backwardDiff);
-        avatarX = lerp(0, backwardInitialValues[1], backwardDiff);
+        avatarScale = lerp(36f / 100f, backwardInitialValues[0], backwardDiff);
+        avatarX = lerp(listView.getMeasuredWidth() - dp(104), backwardInitialValues[1], backwardDiff);
         avatarY = lerp(startAvatarY, backwardInitialValues[2], backwardDiff);
         avatarContainer.setScaleX(avatarScale);
         avatarContainer.setScaleY(avatarScale);
@@ -8220,8 +8221,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 continue;
             }
 
-            float nameX = lerp(0f, backwardInitialValues[11 + a * 2], backwardDiff);
-            float onlineX = lerp(0f, backwardInitialValues[11 + a * 2 + 1], backwardDiff);
+            float nameX = lerp(playProfileAnimation == 2 ? 0 : backwardInitialValues[11 + a * 2] * 1.38f, backwardInitialValues[11 + a * 2], backwardDiff);
+            float onlineX = lerp(playProfileAnimation == 2 ? 0 : backwardInitialValues[11 + a * 2 + 1], backwardInitialValues[11 + a * 2 + 1], backwardDiff);
 
             nameTextView[a].setTranslationX(nameX);
             nameTextView[a].setTranslationY(nameY);
@@ -8592,10 +8593,10 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 nameTextView[0].setScaleY(1.0f);
 
                 nameTextView[1].setPivotY(nameTextView[1].getMeasuredHeight());
-                nameTextView[1].setScaleX(1.38f);
-                nameTextView[1].setScaleY(1.38f);
+                nameTextView[1].setScaleX(1.55f);
+                nameTextView[1].setScaleY(1.55f);
 
-                avatarScale = lerp(1.0f, (42f + 42f + 54f) / 42f, avatarAnimationProgress) / 100f * 42f;
+                avatarScale = lerp(1.0f, (36f + 36f + 54f) / 42f, avatarAnimationProgress) / 100f * 36f;
                 if (storyView != null) {
                     storyView.setExpandProgress(1f);
                 }
@@ -8668,7 +8669,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 if (giftsView != null) {
                     giftsView.setCollapseProgress(diff, openAnimationInProgress);
                 }
-                final float nameScale = 1.0f + 0.12f * diff;
+                final float nameScale = 1.0f + 0.26f * diff;
                 if (expandAnimator == null || !expandAnimator.isRunning()) {
                     avatarContainer.setScaleX(avatarScale);
                     avatarContainer.setScaleY(avatarScale);
@@ -8720,8 +8721,10 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         this.nameX = nameX;
                         this.onlineX = onlineX;
                     }
-                    nameX = AndroidUtilities.lerp(minimizedX, nameX, diff);
-                    onlineX = AndroidUtilities.lerp(minimizedX, onlineX, diff);
+                    if(playProfileAnimation == 2) {
+                        nameX = AndroidUtilities.lerp(minimizedX, nameX, diff);
+                        onlineX = AndroidUtilities.lerp(minimizedX, onlineX, diff);
+                    }
 
                     if (expandAnimator == null || !expandAnimator.isRunning()) {
                         nameTextView[a].setTranslationX(nameX);
@@ -8781,7 +8784,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
         needLayoutText(1f);
 
-        float nameScale = 1.0f + 0.12f;
+        float nameScale = 1.0f + 0.26f;
         for (int a = 0; a < nameTextView.length; a++) {
             if (nameTextView[a] == null) {
                 continue;
@@ -8937,10 +8940,10 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         if (extraHeight > getHeaderExtraHeight() || expandAnimator != null && expandAnimator.isRunning()) {
             minScale = maxScale = nameTextView[1].getScaleX();
         } else if (diff >= 1f){
-            minScale = maxScale = Math.max(nameTextView[1].getScaleX(), 1.12f);
+            minScale = maxScale = Math.max(nameTextView[1].getScaleX(), 1.26f);
         } else {
             minScale = 1f;
-            maxScale = 1.12f;
+            maxScale = 1.26f;
         }
 
         int viewWidth = AndroidUtilities.isTablet() ? AndroidUtilities.dp(490) : AndroidUtilities.displaySize.x;
@@ -9868,10 +9871,10 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
                 if (playProfileAnimation != 2) {
                     int width = (int) Math.ceil(AndroidUtilities.displaySize.x - AndroidUtilities.dp(118 + 8) + 21 * AndroidUtilities.density);
-                    float width2 = nameTextView[1].getPaint().measureText(nameTextView[1].getText().toString()) * 1.12f + nameTextView[1].getSideDrawablesSize();
+                    float width2 = nameTextView[1].getPaint().measureText(nameTextView[1].getText().toString()) * 1.26f + nameTextView[1].getSideDrawablesSize();
                     FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) nameTextView[1].getLayoutParams();
                     if (width < width2) {
-                        layoutParams.width = (int) Math.ceil(width / 1.12f);
+                        layoutParams.width = (int) Math.ceil(width / 1.26f);
                     } else {
                         layoutParams.width = LayoutHelper.WRAP_CONTENT;
                     }
@@ -9880,7 +9883,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     initialAnimationExtraHeight = getHeaderExtraHeight();
                 } else {
                     FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) nameTextView[1].getLayoutParams();
-                    layoutParams.width = (int) ((AndroidUtilities.displaySize.x - dp(32)) / 1.38f);
+                    layoutParams.width = (int) ((AndroidUtilities.displaySize.x - dp(32)) / 1.55f);
                     nameTextView[1].setLayoutParams(layoutParams);
                 }
                 fragmentView.setBackgroundColor(0);
@@ -12909,10 +12912,14 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view;
+//            if(parent != null) {
+//                int padding = AndroidUtilities.dp(16);
+//                parent.setPadding(padding, 0, padding, 0);
+//            }
             switch (viewType) {
                 case VIEW_TYPE_HEADER: {
                     view = new HeaderCell(mContext, 23, resourcesProvider);
-                    view.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
+                    view.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundGray));
                     break;
                 }
                 case VIEW_TYPE_TEXT_DETAIL_MULTILINE:
@@ -13017,7 +13024,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                             super.onMeasure(MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(AndroidUtilities.dp(7.33f), MeasureSpec.EXACTLY));
                         }
                     };
-                    view.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
+                    view.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundGray));
                     break;
                 }
                 case VIEW_TYPE_BOTTOM_PADDING: {
@@ -13185,6 +13192,9 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             }
             if (viewType != VIEW_TYPE_SHARED_MEDIA) {
                 view.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));
+
+                ((ViewGroup.MarginLayoutParams) view.getLayoutParams()).leftMargin = dp(16);
+                ((ViewGroup.MarginLayoutParams) view.getLayoutParams()).rightMargin = dp(16);
             }
             return new RecyclerListView.Holder(view);
         }
@@ -13209,9 +13219,21 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+            boolean isTopRow = getItemViewType(position - 1) == VIEW_TYPE_HEADER;
+            boolean isBottomRow = getItemViewType(position + 1) == VIEW_TYPE_SHADOW || getItemViewType(position + 1) == VIEW_TYPE_HEADER || getItemViewType(position + 1) == VIEW_TYPE_VERSION;
+            boolean isShadowRow = getItemViewType(position) == VIEW_TYPE_SHADOW || getItemViewType(position) == VIEW_TYPE_VERSION;
+
+            ListBackgroundDrawable listBackgroundDrawable = new ListBackgroundDrawable(isTopRow, isBottomRow, isShadowRow);
+
+            if(isTopRow || isBottomRow || isShadowRow)
+                holder.itemView.setBackground(listBackgroundDrawable);
+            else
+                holder.itemView.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+
             switch (holder.getItemViewType()) {
                 case VIEW_TYPE_HEADER:
                     HeaderCell headerCell = (HeaderCell) holder.itemView;
+                    headerCell.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundGray));
                     if (position == infoHeaderRow) {
                         if (ChatObject.isChannel(currentChat) && !currentChat.megagroup && channelInfoRow != -1) {
                             headerCell.setText(LocaleController.getString(R.string.ReportChatDescription));
@@ -13231,7 +13253,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     } else if (position == botPermissionsHeader) {
                         headerCell.setText(LocaleController.getString(R.string.BotProfilePermissions));
                     }
-                    headerCell.setTextColor(dontApplyPeerColor(getThemedColor(Theme.key_windowBackgroundWhiteBlueHeader), false));
+//                    headerCell.setTextColor(dontApplyPeerColor(getThemedColor(Theme.key_windowBackgroundWhiteBlueHeader), false));
                     break;
                 case VIEW_TYPE_TEXT_DETAIL_MULTILINE:
                 case VIEW_TYPE_TEXT_DETAIL:
@@ -13703,11 +13725,11 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     View sectionCell = holder.itemView;
                     sectionCell.setTag(position);
                     Drawable drawable;
-                    if (position == infoSectionRow && lastSectionRow == -1 && secretSettingsSectionRow == -1 && sharedMediaRow == -1 && membersSectionRow == -1 || position == secretSettingsSectionRow || position == lastSectionRow || position == membersSectionRow && lastSectionRow == -1 && sharedMediaRow == -1) {
-                        sectionCell.setBackgroundDrawable(Theme.getThemedDrawable(mContext, R.drawable.greydivider_bottom, getThemedColor(Theme.key_windowBackgroundGrayShadow)));
-                    } else {
-                        sectionCell.setBackgroundDrawable(Theme.getThemedDrawable(mContext, R.drawable.greydivider, getThemedColor(Theme.key_windowBackgroundGrayShadow)));
-                    }
+//                    if (position == infoSectionRow && lastSectionRow == -1 && secretSettingsSectionRow == -1 && sharedMediaRow == -1 && membersSectionRow == -1 || position == secretSettingsSectionRow || position == lastSectionRow || position == membersSectionRow && lastSectionRow == -1 && sharedMediaRow == -1) {
+//                        sectionCell.setBackgroundDrawable(Theme.getThemedDrawable(mContext, R.drawable.greydivider_bottom, getThemedColor(Theme.key_windowBackgroundGrayShadow)));
+//                    } else {
+//                        sectionCell.setBackgroundDrawable(Theme.getThemedDrawable(mContext, R.drawable.greydivider, getThemedColor(Theme.key_windowBackgroundGrayShadow)));
+//                    }
                     break;
                 case VIEW_TYPE_SHADOW_TEXT: {
                     TextInfoPrivacyCell cell = (TextInfoPrivacyCell) holder.itemView;

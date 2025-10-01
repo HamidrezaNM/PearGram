@@ -15,6 +15,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.ShapeDrawable;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -63,6 +65,7 @@ import org.telegram.ui.Cells.TextInfoPrivacyCell;
 import org.telegram.ui.Cells.TextSettingsCell;
 import org.telegram.ui.Components.AlertsCreator;
 import org.telegram.ui.Components.LayoutHelper;
+import org.telegram.ui.Components.ListBackgroundDrawable;
 import org.telegram.ui.Components.RecyclerListView;
 
 import java.util.ArrayList;
@@ -430,6 +433,7 @@ public class NotificationsSettingsActivity extends BaseFragment implements Notif
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
         actionBar.setAllowOverlayTitle(true);
         actionBar.setTitle(getString("NotificationsAndSounds", R.string.NotificationsAndSounds));
+        actionBar.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundGray));
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
             public void onItemClick(int id) {
@@ -900,10 +904,12 @@ public class NotificationsSettingsActivity extends BaseFragment implements Notif
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view;
+            int padding = AndroidUtilities.dp(16);
+            parent.setPadding(padding, 0, padding, 0);
             switch (viewType) {
                 case 0:
                     view = new HeaderCell(mContext, resourceProvider);
-                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundGray));
                     break;
                 case 1:
                     view = new TextCheckCell(mContext, resourceProvider);
@@ -918,7 +924,7 @@ public class NotificationsSettingsActivity extends BaseFragment implements Notif
                     view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
                 case 4:
-                    view = new ShadowSectionCell(mContext, resourceProvider);
+                    view = new ShadowSectionCell(mContext, 0, resourceProvider);
                     break;
                 case 5:
                     view = new TextSettingsCell(mContext, resourceProvider);
@@ -935,9 +941,18 @@ public class NotificationsSettingsActivity extends BaseFragment implements Notif
 
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+            boolean isTopRow = getItemViewType(position - 1) == 0;
+            boolean isBottomRow = getItemViewType(position + 1) == 4;
+            boolean isShadowRow = getItemViewType(position) == 4;
+
+            ListBackgroundDrawable drawable = new ListBackgroundDrawable(isTopRow, isBottomRow, isShadowRow);
+
+            holder.itemView.setBackground(drawable);
+
             switch (holder.getItemViewType()) {
                 case 0: {
                     HeaderCell headerCell = (HeaderCell) holder.itemView;
+                    headerCell.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundGray));
                     if (position == notificationsSectionRow) {
                         headerCell.setText(getString("NotificationsForChats", R.string.NotificationsForChats));
                     } else if (position == inappSectionRow) {
@@ -1099,11 +1114,11 @@ public class NotificationsSettingsActivity extends BaseFragment implements Notif
                     break;
                 }
                 case 4: {
-                    if (position == resetNotificationsSectionRow) {
-                        holder.itemView.setBackgroundDrawable(Theme.getThemedDrawableByKey(mContext, R.drawable.greydivider_bottom, Theme.key_windowBackgroundGrayShadow));
-                    } else {
-                        holder.itemView.setBackgroundDrawable(Theme.getThemedDrawableByKey(mContext, R.drawable.greydivider, Theme.key_windowBackgroundGrayShadow));
-                    }
+//                    if (position == resetNotificationsSectionRow) {
+//                        holder.itemView.setBackgroundDrawable(Theme.getThemedDrawableByKey(mContext, R.drawable.greydivider_bottom, Theme.key_windowBackgroundGrayShadow));
+//                    } else {
+//                        holder.itemView.setBackgroundDrawable(Theme.getThemedDrawableByKey(mContext, R.drawable.greydivider, Theme.key_windowBackgroundGrayShadow));
+//                    }
                     break;
                 }
                 case 5: {

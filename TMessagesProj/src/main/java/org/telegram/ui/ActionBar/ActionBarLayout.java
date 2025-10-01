@@ -25,6 +25,7 @@ import android.graphics.Color;
 import android.graphics.Outline;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.RenderEffect;
@@ -743,8 +744,10 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
             } else {
                 headerShadowDrawable.setAlpha(alpha);
             }
-            headerShadowDrawable.setBounds(0, y, getMeasuredWidth(), y + headerShadowDrawable.getIntrinsicHeight());
-            headerShadowDrawable.draw(canvas);
+            Paint stroke = new Paint();
+            stroke.setColor(Theme.getColor(Theme.key_divider));
+            canvas.drawRect(0, y, getMeasuredWidth(), y + dp(2.0f / AndroidUtilities.density), stroke);
+//            headerShadowDrawable.draw(canvas);
         }
     }
 

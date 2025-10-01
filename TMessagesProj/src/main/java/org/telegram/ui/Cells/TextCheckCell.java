@@ -53,7 +53,7 @@ public class TextCheckCell extends FrameLayout {
     private Switch checkBox;
     private boolean needDivider;
     private boolean isMultiline;
-    private int height = 50;
+    private int height = 44;
     private int animatedColorBackground;
     private float animationProgress;
     private Paint animationPaint;

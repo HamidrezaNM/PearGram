@@ -170,6 +170,10 @@ public class ActionBar extends FrameLayout {
                 titleActionRunnable.run();
             }
         });
+
+//        View buttonShadow = new View(getContext());
+//        buttonShadow.setBackgroundColor(getThemedColor(Theme.key_divider));
+//        addView(buttonShadow, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 1.0f / AndroidUtilities.density, Gravity.LEFT | Gravity.BOTTOM, 0, 0, 0, 0));
     }
 
     public INavigationLayout.BackButtonState getBackButtonState() {
@@ -336,6 +340,7 @@ public class ActionBar extends FrameLayout {
         if (clip) {
             canvas.restore();
         }
+
         return result;
     }
 
@@ -1275,7 +1280,7 @@ public class ActionBar extends FrameLayout {
                         }
                     } else {
                         if (titleTextView[i] != null && titleTextView[i].getVisibility() != GONE) {
-                            titleTextView[i].setTextSize(!AndroidUtilities.isTablet() && getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE ? 18 : 18);
+                            titleTextView[i].setTextSize(!AndroidUtilities.isTablet() && getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE ? 18 : 16);
                         }
                         if (subtitleTextView != null && subtitleTextView.getVisibility() != GONE) {
                             subtitleTextView.setTextSize(!AndroidUtilities.isTablet() && getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE ? 14 : 16);

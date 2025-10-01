@@ -60,7 +60,7 @@ public class TextCell extends FrameLayout {
     public int leftPadding;
     private boolean needDivider;
     public int offsetFromImage = 71;
-    public int heightDp = 50;
+    public int heightDp = 44;
     public int imageLeft = 21;
     private boolean inDialogs;
     private boolean prioritizeTitleOverValue;
