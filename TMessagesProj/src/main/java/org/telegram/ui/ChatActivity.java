@@ -10388,6 +10388,8 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
         searchContainer.setPadding(0, AndroidUtilities.dp(3), 0, 0);
         searchContainer.setClipToPadding(false);
 
+        actionBar.showActionMode();
+
         searchCountText = new AnimatedTextView(getContext(), true, true, true);
         searchCountText.setAnimationProperties(.25f, 0, 280, CubicBezierInterpolator.EASE_OUT_QUINT);
 //        searchCountText.setScaleProperty(.5f);

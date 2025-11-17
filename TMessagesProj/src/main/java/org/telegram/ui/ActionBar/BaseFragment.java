@@ -606,6 +606,10 @@ public abstract class BaseFragment {
         return allowPresentFragment() && parentLayout != null && parentLayout.presentFragmentAsPreview(fragment);
     }
 
+    public boolean presentFragmentAsModal(BaseFragment fragment) {
+        return parentLayout != null && parentLayout.presentFragmentAsModal(fragment);
+    }
+
     public boolean presentFragmentAsPreviewWithMenu(BaseFragment fragment, ActionBarPopupWindow.ActionBarPopupWindowLayout menu) {
         return allowPresentFragment() && parentLayout != null && parentLayout.presentFragmentAsPreviewWithMenu(fragment, menu);
     }

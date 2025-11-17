@@ -156,7 +156,7 @@ public class ActionBarPopupWindow extends PopupWindow {
             super(context);
             this.resourcesProvider = resourcesProvider;
             if (resId != 0) {
-                backgroundDrawable = getResources().getDrawable(resId).mutate();
+                backgroundDrawable = Theme.createRoundBackgroundDrawable(getThemedColor(Theme.key_actionBarDefaultSubmenuBackground), AndroidUtilities.dp(12), 1, AndroidUtilities.dp(8), AndroidUtilities.dp(8));
                 setPadding(AndroidUtilities.dp(8), AndroidUtilities.dp(8), AndroidUtilities.dp(8), AndroidUtilities.dp(8));
             }
             if (backgroundDrawable != null) {

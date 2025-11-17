@@ -267,6 +267,10 @@ public interface INavigationLayout {
         return presentFragment(new NavigationParams(fragment).setPreview(true).setMenuView(menuView));
     }
 
+    default boolean presentFragmentAsModal(BaseFragment fragment) {
+        return presentFragment(new NavigationParams(fragment).setModal(true));
+    }
+
     /**
      * @deprecated You should use {@link INavigationLayout.NavigationParams} for advanced params
      */
@@ -345,6 +349,7 @@ public interface INavigationLayout {
         public boolean noAnimation;
         public boolean checkPresentFromDelegate = true;
         public boolean preview;
+        public boolean modal;
         public ActionBarPopupWindow.ActionBarPopupWindowLayout menuView;
         public boolean needDelayWithoutAnimation;
 
@@ -372,6 +377,11 @@ public interface INavigationLayout {
 
         public NavigationParams setPreview(boolean preview) {
             this.preview = preview;
+            return this;
+        }
+
+        public NavigationParams setModal(boolean modal) {
+            this.modal = modal;
             return this;
         }
 

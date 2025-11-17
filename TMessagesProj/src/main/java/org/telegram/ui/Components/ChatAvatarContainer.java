@@ -739,7 +739,7 @@ public class ChatAvatarContainer extends FrameLayout implements NotificationCent
         }
         if (subtitleTextView != null) {
             int lSubtitle = ((width - dp(42)) / 2) - (subtitleTextView.getMeasuredWidth() / 2);
-            subtitleTextView.layout(0, viewTop + dp(24), width - dp(56), viewTop + subtitleTextView.getTextHeight() + dp(24));
+            subtitleTextView.layout(dp(8), viewTop + dp(24), width - dp(64), viewTop + subtitleTextView.getTextHeight() + dp(24));
         } else if (animatedSubtitleTextView != null) {
             animatedSubtitleTextView.layout(0, viewTop + dp(24), width - dp(56), viewTop + animatedSubtitleTextView.getTextHeight() + dp(24));
         }

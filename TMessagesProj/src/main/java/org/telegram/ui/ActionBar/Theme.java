@@ -39,6 +39,7 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
+import android.graphics.SweepGradient;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
@@ -5698,6 +5699,240 @@ public class Theme {
             stateListDrawable.addState(StateSet.WILD_CARD, new ColorDrawable(0x00000000));
             return stateListDrawable;
         }
+    }
+
+    public static Drawable createRoundBackgroundDrawable(int color, int radius) {
+        return createRoundBackgroundDrawable(color, radius, 0, 0, 0);
+    }
+
+    public static Drawable createRoundBackgroundDrawable(int color, int radius, int type, int horizInset, int vertInset) {
+        Paint paint = new Paint();
+        paint.setColor(color);
+        Drawable maskDrawable = new Drawable() {
+
+            RectF rect;
+
+            @Override
+            public void draw(@NonNull Canvas canvas) {
+                int rad;
+                android.graphics.Rect bounds = getBounds();
+
+                if(type == 0) {
+                    if(radius == -1)
+                        rad = (Math.max(bounds.width(), bounds.height()) / 2);
+                    else
+                        rad = radius;
+                    canvas.drawCircle(bounds.centerX(), bounds.centerY(), rad, paint);
+                } else {
+                    if (rect == null) {
+                        rect = new RectF();
+                    }
+                    bounds.inset(horizInset, vertInset, horizInset, vertInset);
+                    rect.set(bounds);
+                    rad = radius <= 0 ? dp(6) : radius;
+                    canvas.drawRoundRect(rect, rad, rad, paint);
+                }
+            }
+
+            @Override
+            public void setAlpha(int alpha) {
+
+            }
+
+            @Override
+            public void setColorFilter(@Nullable ColorFilter colorFilter) {
+
+            }
+
+            @Override
+            public int getOpacity() {
+                return PixelFormat.UNKNOWN;
+            }
+        };
+
+        return maskDrawable;
+    }
+
+    public static Drawable DualStrokeRoundedDrawable(int color, float strokeWidth, float cornerRadius) {
+        Paint paintTopLeft;
+        Paint paintBottomRight;
+        Paint paint = new Paint();
+
+        paint.setColor(color);
+
+        paintTopLeft = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paintTopLeft.setStyle(Paint.Style.STROKE);
+        paintTopLeft.setStrokeWidth(strokeWidth);
+//        paintTopLeft.setColor(colorTopLeft);
+
+        paintBottomRight = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paintBottomRight.setStyle(Paint.Style.STROKE);
+        paintBottomRight.setStrokeWidth(strokeWidth);
+//        paintBottomRight.setColor(colorBottomRight);
+
+        Drawable drawable = new Drawable() {
+
+            @Override
+            public void draw(Canvas canvas) {
+                RectF rect = new RectF(getBounds());
+                float halfStroke = strokeWidth / 2f;
+                rect.inset(halfStroke, halfStroke);
+
+                int[] colors = {
+                        Color.BLACK,
+                        Color.DKGRAY,
+                        Color.LTGRAY,
+                        Color.WHITE
+                };
+
+                float[] positions = {
+                        0f,
+                        0.3f,
+                        0.7f,
+                        1f
+                };
+
+                LinearGradient gradient = new LinearGradient(
+                        rect.left, rect.top,
+                        rect.right, rect.bottom,
+                        Color.WHITE, Color.TRANSPARENT,
+                        Shader.TileMode.CLAMP
+                );
+
+                LinearGradient gradient2 = new LinearGradient(
+                        rect.left, rect.top,
+                        rect.right, rect.bottom,
+                        Color.TRANSPARENT, Color.WHITE,
+                        Shader.TileMode.CLAMP
+                );
+
+                paintTopLeft.setShader(gradient);
+                paintBottomRight.setShader(gradient2);
+
+                canvas.drawLine(rect.left + cornerRadius, rect.top,
+                        rect.right - cornerRadius, rect.top, paintTopLeft);
+
+                canvas.drawArc(new RectF(rect.left, rect.top,
+                                rect.left + 2 * cornerRadius, rect.top + 2 * cornerRadius),
+                        180, 90, false, paintTopLeft);
+
+                canvas.drawArc(new RectF(rect.right - 2 * cornerRadius, rect.top,
+                                rect.right, rect.top + 2 * cornerRadius),
+                        270, 90, false, paintTopLeft);
+
+                canvas.drawLine(rect.left, rect.top + cornerRadius,
+                        rect.left, rect.bottom - cornerRadius, paintTopLeft);
+
+                canvas.drawLine(rect.right, rect.top + cornerRadius,
+                        rect.right, rect.bottom - cornerRadius, paintBottomRight);
+
+                canvas.drawLine(rect.left + cornerRadius, rect.bottom,
+                        rect.right - cornerRadius, rect.bottom, paintBottomRight);
+
+                canvas.drawArc(new RectF(rect.left, rect.bottom - 2 * cornerRadius,
+                                rect.left + 2 * cornerRadius, rect.bottom),
+                        90, 90, false, paintBottomRight);
+
+                canvas.drawArc(new RectF(rect.right - 2 * cornerRadius, rect.bottom - 2 * cornerRadius,
+                                rect.right, rect.bottom),
+                        0, 90, false, paintBottomRight);
+
+                canvas.drawRoundRect(rect, cornerRadius, cornerRadius, paint);
+            }
+
+            @Override
+            public void setAlpha(int alpha) {
+                paintTopLeft.setAlpha(alpha);
+                paintBottomRight.setAlpha(alpha);
+            }
+
+            @Override
+            public void setColorFilter(ColorFilter colorFilter) {
+                paintTopLeft.setColorFilter(colorFilter);
+                paintBottomRight.setColorFilter(colorFilter);
+            }
+
+            @Override
+            public int getOpacity() {
+                return PixelFormat.TRANSLUCENT;
+            }
+        };
+
+        return drawable;
+    }
+
+    public static Drawable liquidGlassDrawable(float cornerRadius, float borderWidth, int color, int borderColor) {
+        final Paint basePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        final Paint glossPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        final Paint borderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
+        basePaint.setStyle(Paint.Style.FILL);
+        glossPaint.setStyle(Paint.Style.FILL);
+
+        borderPaint.setStyle(Paint.Style.STROKE);
+        borderPaint.setStrokeWidth(borderWidth);
+
+        Drawable drawable = new Drawable() {
+            @Override
+            public void draw(Canvas canvas) {
+                RectF rect = new RectF(getBounds());
+                rect.inset(borderWidth / 2f, borderWidth / 2f);
+                float w = rect.width();
+                float h = rect.height();
+
+                basePaint.setColor(color);
+
+                LinearGradient glossGradient = new LinearGradient(
+                        rect.left, rect.top, rect.right, rect.bottom,
+                        new int[]{
+                                Color.parseColor("#00FFFFFF"),
+                                Color.parseColor("#00FFFFFF")
+                        },
+                        new float[]{0f, 0.8f},
+                        Shader.TileMode.CLAMP
+                );
+                glossPaint.setShader(glossGradient);
+                glossPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SCREEN));
+
+                LinearGradient borderGradient = new LinearGradient(
+                        rect.left, rect.top, rect.right, rect.bottom,
+                        new int[]{
+                                borderColor,
+                                borderColor,
+                                borderColor
+                        },
+                        new float[]{0f, 0.5f, 1f},
+                        Shader.TileMode.CLAMP
+                );
+                borderPaint.setShader(borderGradient);
+
+                // 🩶 ترکیب همه روی لایه‌ی جدا
+                int save = canvas.saveLayer(rect, null);
+                canvas.drawRoundRect(rect, cornerRadius, cornerRadius, basePaint);
+                canvas.drawRoundRect(rect, cornerRadius, cornerRadius, glossPaint);
+                canvas.restoreToCount(save);
+
+                // ✨ Border نهایی
+                canvas.drawRoundRect(rect, cornerRadius, cornerRadius, borderPaint);
+            }
+
+            @Override
+            public void setAlpha(int alpha) {
+                basePaint.setAlpha(alpha);
+            }
+
+            @Override
+            public void setColorFilter(ColorFilter colorFilter) {
+                basePaint.setColorFilter(colorFilter);
+            }
+
+            @Override
+            public int getOpacity() {
+                return PixelFormat.TRANSLUCENT;
+            }
+        };
+
+        return drawable;
     }
 
     public static Drawable createCircleSelectorDrawable(int color, int leftInset, int rightInset) {

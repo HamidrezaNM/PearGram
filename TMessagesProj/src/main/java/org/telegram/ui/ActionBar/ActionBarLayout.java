@@ -1370,7 +1370,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
         containerViewBack.setVisibility(View.INVISIBLE);
     }
 
-    private void startLayoutAnimation(final boolean open, final boolean first, final boolean preview) {
+    private void startLayoutAnimation(final boolean open, final boolean first, final boolean preview, final boolean modal) {
         if (first) {
             animationProgress = 0.0f;
             lastFrameTime = System.nanoTime() / 1000000;
@@ -1393,7 +1393,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
                     dt = 18;
                 }
                 lastFrameTime = newTime;
-                float duration = preview && open ? 190.0f : 500.0f;
+                float duration = preview && open ? 190.0f : 300.0f;
                 animationProgress += dt / duration;
                 if (animationProgress > 1.0f) {
                     animationProgress = 1.0f;
@@ -1448,6 +1448,16 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
                         Theme.moveUpDrawable.setAlpha((int) (255 * clampedInterpolated));
                         containerView.invalidate();
                         invalidate();
+                    } else if(modal) {
+                        containerView.setAlpha(1f);
+//                        containerViewBack.setAlpha(1.0f - clampedInterpolated * .5f);
+
+                        containerView.setTranslationX(0);
+                        containerViewBack.setTranslationX(0);
+                        containerView.setTranslationY(containerView.getMeasuredHeight() * (1.0f - interpolated) + dp(24) + AndroidUtilities.statusBarHeight);
+                        containerViewBack.setTranslationY(dp(12) * (-interpolated));
+                        containerViewBack.setScaleX(.9f + (0.1f * (1.0f - interpolated)));
+                        containerViewBack.setScaleY(.9f + (0.1f * (1.0f - interpolated)));
                     } else {
                         containerView.setAlpha(1f);
                         containerViewBack.setAlpha(1.0f - clampedInterpolated * .5f);
@@ -1477,7 +1487,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
                     }
                 }
                 if (animationProgress < 1) {
-                    startLayoutAnimation(open, false, preview);
+                    startLayoutAnimation(open, false, preview, modal);
                 } else {
                     onAnimationEndCheck(false);
                 }
@@ -1516,6 +1526,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
         boolean forceWithoutAnimation = params.noAnimation;
         boolean check = params.checkPresentFromDelegate;
         boolean preview = params.preview;
+        boolean modal = params.modal;
         ActionBarPopupWindow.ActionBarPopupWindowLayout menu = params.menuView;
 
         if (fragment == null || checkTransitionAnimation() || delegate != null && check && !delegate.needPresentFragment(this, params) || !fragment.onFragmentCreate()) {
@@ -1717,7 +1728,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
                         transitionAnimationPreviewMode = false;
                         containerView.setScaleX(1.0f);
                         containerView.setScaleY(1.0f);
-                    } else {
+                    } else if(!modal) {
                         presentFragmentInternalRemoveOld(removeLast, currentFragment);
                         containerView.setTranslationX(0);
                     }
@@ -1769,7 +1780,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
                                         currentFragment.onTransitionAnimationStart(false, false);
                                     }
                                     fragment.onTransitionAnimationStart(true, false);
-                                    startLayoutAnimation(true, true, preview);
+                                    startLayoutAnimation(true, true, preview, modal);
                                 } else if (delayedOpenAnimationRunnable != null) {
                                     AndroidUtilities.cancelRunOnUIThread(delayedOpenAnimationRunnable);
                                     if (delayedAnimationResumed) {
@@ -1792,7 +1803,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
                                         currentFragment.onTransitionAnimationStart(false, false);
                                     }
                                     fragment.onTransitionAnimationStart(true, false);
-                                    startLayoutAnimation(true, true, preview);
+                                    startLayoutAnimation(true, true, preview, modal);
                                 }
                             };
                         }
@@ -1806,12 +1817,12 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
                                 }
                                 delayedOpenAnimationRunnable = null;
                                 fragment.onTransitionAnimationStart(true, false);
-                                startLayoutAnimation(true, true, preview);
+                                startLayoutAnimation(true, true, preview, modal);
                             }
                         };
                         AndroidUtilities.runOnUIThread(delayedOpenAnimationRunnable, 200);
                     } else {
-                        startLayoutAnimation(true, true, preview);
+                        startLayoutAnimation(true, true, preview, modal);
                     }
                 } else {
                     if (!preview && (containerView.isKeyboardVisible || containerViewBack.isKeyboardVisible) && currentFragment != null) {
@@ -2182,12 +2193,12 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
                                     return;
                                 }
                                 waitingForKeyboardCloseRunnable = null;
-                                startLayoutAnimation(false, true, false);
+                                startLayoutAnimation(false, true, false, false);
                             }
                         };
                         AndroidUtilities.runOnUIThread(waitingForKeyboardCloseRunnable, 200);
                     } else {
-                        startLayoutAnimation(false, true, inPreviewMode || transitionAnimationPreviewMode);
+                        startLayoutAnimation(false, true, inPreviewMode || transitionAnimationPreviewMode, false);
                     }
                 } else {
                     currentAnimation = animation;

@@ -45,6 +45,7 @@ import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -3276,6 +3277,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         searchItem.setContentDescription(getString(R.string.Search));
         if (onlySelect) {
             actionBar.setBackButtonImage(R.drawable.ic_ab_back);
+            actionBar.setBackgroundColor(Theme.getColor(Theme.key_actionBarDefault));
             if (initialDialogsType == DIALOGS_TYPE_BOT_SELECT_VERIFY) {
                 actionBar.setTitle(getString(R.string.BotChooseChatToVerify));
             } else if (isReplyTo) {
@@ -3284,6 +3286,21 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 actionBar.setTitle(getString(R.string.QuoteTo));
             } else if (initialDialogsType == DIALOGS_TYPE_FORWARD && selectAlertString == null) {
                 actionBar.setTitle(getString(R.string.ForwardTo));
+//                actionBar.setOccupyStatusBar(false);
+//                GradientDrawable gradientDrawable = new GradientDrawable();
+//                gradientDrawable.setShape(GradientDrawable.RECTANGLE);
+//                gradientDrawable.setColor(getThemedColor(Theme.key_actionBarDefault));
+//
+//                float radiusPx = AndroidUtilities.dp(10);
+//                float[] radii = new float[]{
+//                        radiusPx, radiusPx,
+//                        radiusPx, radiusPx,
+//                        0,0,
+//                        0,0,
+//                };
+//
+//                gradientDrawable.setCornerRadii(radii);
+//                actionBar.setBackground(gradientDrawable);
             } else if (initialDialogsType == DIALOGS_TYPE_WIDGET) {
                 actionBar.setTitle(getString(R.string.SelectChats));
             } else if (initialDialogsType == DIALOGS_TYPE_START_ATTACH_BOT) {
@@ -3315,7 +3332,6 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             } else {
                 actionBar.setTitle(getString(R.string.SelectChat));
             }
-            actionBar.setBackgroundColor(Theme.getColor(Theme.key_actionBarDefault));
         } else {
             if (searchString != null || folderId != 0) {
                 actionBar.setBackButtonDrawable(backDrawable = new BackDrawable(false));
@@ -3330,9 +3346,9 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 statusDrawable = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(null, dp(26));
                 statusDrawable.center = true;
                 if (BuildVars.DEBUG_VERSION) {
-                    actionBar.setTitle(getString(R.string.AppNameBeta), statusDrawable);
+                    actionBar.setTitle("Chats", statusDrawable);
                 } else {
-                    actionBar.setTitle(getString(R.string.AppName), statusDrawable);
+                    actionBar.setTitle("Chats", statusDrawable);
                 }
                 updateStatus(UserConfig.getInstance(currentAccount).getCurrentUser(), false);
             }
@@ -5203,7 +5219,9 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             FilesMigrationService.checkBottomSheet(this);
         }
         updateMenuButton(false);
-        actionBar.setDrawBlurBackground(contentView);
+        if (initialDialogsType != DIALOGS_TYPE_FORWARD) {
+            actionBar.setDrawBlurBackground(contentView);
+        }
 
         rightSlidingDialogContainer = new RightSlidingDialogContainer(context) {
 

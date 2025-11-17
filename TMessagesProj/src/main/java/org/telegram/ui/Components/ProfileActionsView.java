@@ -104,6 +104,7 @@ public class ProfileActionsView extends View {
     final float textPadding;
 
     private int color = 0;
+    private int foregroundColor = Color.WHITE;
     private boolean hasColorById;
     private RadialGradient radialGradient;
     private final Matrix matrix = new Matrix();
@@ -124,7 +125,8 @@ public class ProfileActionsView extends View {
         this.targetHeight = (int) (targetHeight - ypadding - top);
 
         textPaint.setTextSize(AndroidUtilities.dpf2(11));
-        textPaint.setColor(Color.WHITE);
+//        textPaint.setColor(Color.WHITE);
+//        textPaint.setColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlueHeader));
         setBackgroundColor(0);
     }
 
@@ -155,6 +157,13 @@ public class ProfileActionsView extends View {
             this.color = color;
             this.hasColorById = hasColorById;
             createColorShader();
+        }
+    }
+
+    public  void setForegroundColor(int color) {
+        if (this.foregroundColor != color) {
+            this.foregroundColor = color;
+            textPaint.setColor(color);
         }
     }
 
@@ -380,7 +389,7 @@ public class ProfileActionsView extends View {
 
         canvas.save();
         canvas.scale(action.textScale, action.textScale, cx, textY + action.text.getHeight() * action.textScale / 2.0f);
-        action.text.draw(canvas, cx - action.text.getWidth() / 2f, textY, 0xFFFFFFFF, alpha);
+        action.text.draw(canvas, cx - action.text.getWidth() / 2f, textY, foregroundColor, alpha);
         canvas.restore();
 
         if (action.iconTranslationY != 0) {
@@ -397,6 +406,7 @@ public class ProfileActionsView extends View {
         }
         if (!isAnimatingCallAction || action.key != KEY_CALL) {
             action.drawable.setAlpha((int) (0xFF * alpha));
+            action.drawable.setColorFilter(foregroundColor, PorterDuff.Mode.SRC_IN);
             action.drawable.draw(canvas);
         }
 
@@ -1047,7 +1057,7 @@ public class ProfileActionsView extends View {
                     false, null
                 );
                 drawable.setMasterParent(ProfileActionsView.this);
-                drawable.setColorFilter(new PorterDuffColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN));
+                drawable.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteBlueHeader), PorterDuff.Mode.SRC_IN));
                 drawable.start();
                 this.drawable = drawable;
             } else {

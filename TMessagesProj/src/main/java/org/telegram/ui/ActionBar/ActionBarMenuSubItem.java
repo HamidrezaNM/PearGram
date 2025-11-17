@@ -47,7 +47,7 @@ public class ActionBarMenuSubItem extends FrameLayout {
     boolean top;
     boolean bottom;
 
-    private int itemHeight = 48;
+    private int itemHeight = 42;
     protected final Theme.ResourcesProvider resourcesProvider;
     public Runnable openSwipeBackLayout;
 
@@ -84,7 +84,7 @@ public class ActionBarMenuSubItem extends FrameLayout {
         imageView = new RLottieImageView(context);
         imageView.setScaleType(ImageView.ScaleType.CENTER);
         imageView.setColorFilter(new PorterDuffColorFilter(iconColor, PorterDuff.Mode.MULTIPLY));
-        addView(imageView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, 40, Gravity.CENTER_VERTICAL | (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT)));
+        addView(imageView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, 40, Gravity.CENTER_VERTICAL | (LocaleController.isRTL ? Gravity.RIGHT : Gravity.RIGHT)));
 
         textView = new AnimatedEmojiSpan.TextViewEmojis(context);
         textView.setLines(1);
@@ -213,6 +213,7 @@ public class ActionBarMenuSubItem extends FrameLayout {
             }
             imageView.setVisibility(VISIBLE);
             textView.setPadding(checkViewLeft ? (checkView != null ? dp(43) : 0) : dp(icon != 0 || iconDrawable != null ? 43 : 0), 0, checkViewLeft ? dp(icon != 0 || iconDrawable != null ? 43 : 0) : (checkView != null ? dp(43) : 0), 0);
+            textView.setPadding(0,0,0,0);
         } else {
             iconResId = 0;
             imageView.setVisibility(INVISIBLE);
@@ -223,6 +224,7 @@ public class ActionBarMenuSubItem extends FrameLayout {
     public void setTextAndIcon(CharSequence text, ImageLocation imageLocation, String imageFilter, Drawable thumb, Object parentObject) {
         textView.setText(text);
         textView.setPadding(checkViewLeft ? (checkView != null ? dp(43) : 0) : dp(43), 0, checkViewLeft ? dp(43) : (checkView != null ? dp(43) : 0), 0);
+        textView.setPadding(0,0,0,0);
         if (backupImageView == null) {
             backupImageView = new BackupImageView(getContext());
             backupImageView.setRoundRadius(dp(5));

@@ -1206,6 +1206,7 @@
     <string name="ShareMyPhone">SHARE MY PHONE NUMBER</string>
     <string name="ShareMyContactInfo">Share my contact</string>
     <string name="AddToContacts">Add to contacts</string>
+    <string name="CopyUserId">Copy User Id</string>
     <string name="EncryptedPlaceholderTitleIncoming">%s invited you to join a secret chat.</string>
     <string name="EncryptedPlaceholderTitleOutgoing">You have invited %s to join a secret chat.</string>
     <string name="EncryptedDescriptionTitle">Secret chats:</string>
@@ -1920,6 +1921,7 @@
     <string name="InviteLinkCount_other">%1$d invite links</string>
     <string name="EmojiCopied">Emoji copied to clipboard.</string>
     <string name="UsernameCopied">Username copied to clipboard.</string>
+    <string name="UserIdCopied">User Id copied to clipboard.</string>
     <string name="HashtagCopied">Hashtag copied to clipboard.</string>
     <string name="BioCopied">Bio copied to clipboard.</string>
     <string name="BirthdayCopied">Birthday copied to clipboard.</string>

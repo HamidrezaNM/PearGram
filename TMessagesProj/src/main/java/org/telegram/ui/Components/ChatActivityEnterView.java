@@ -2498,7 +2498,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
         };
         textFieldContainer.setClipChildren(false);
         textFieldContainer.setClipToPadding(false);
-        textFieldContainer.setPadding(0, dp(1), 0, 0);
+        textFieldContainer.setPadding(0, dp(1), 0, dp(8));
         addView(textFieldContainer, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.BOTTOM, 0, 1, 0, 0));
 
         FrameLayout frameLayout = messageEditTextContainer = new FrameLayout(context) {
@@ -2538,9 +2538,9 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
         messageEditField = new FrameLayout(context) {};
         messageEditBackground = new GradientDrawable();
 
-        textFieldContainer.addView(messageEditField, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.BOTTOM, 48, 0, 48, 0));
+        textFieldContainer.addView(messageEditField, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.BOTTOM, 56, 0, 48, 6));
 
-        messageEditField.addView(frameLayout, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.BOTTOM, 0, 0, 0, 0));
+        messageEditField.addView(frameLayout, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.BOTTOM, 0, 2, 0, 2));
 
         emojiButton = new ChatActivityEnterViewAnimatedIconView(context) {
             @Override
@@ -2610,7 +2610,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
             attachLayout.setEnabled(false);
             attachLayout.setPivotX(dp(48));
             attachLayout.setClipChildren(false);
-            textFieldContainer.addView(attachLayout, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, 48, Gravity.BOTTOM | Gravity.LEFT));
+            textFieldContainer.addView(attachLayout, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, 36, Gravity.BOTTOM | Gravity.LEFT, 0,0,0,6));
 
             notifyButton = new ImageView(context);
             notifySilentDrawable = new CrossOutDrawable(context, R.drawable.input_notify_on, Theme.key_chat_messagePanelIcons);
@@ -2652,7 +2652,8 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
             if (Build.VERSION.SDK_INT >= 21) {
                 attachButton.setBackground(Theme.createSelectorDrawable(getThemedColor(Theme.key_listSelector)));
             }
-            attachLayout.addView(attachButton, LayoutHelper.createLinear(48, 48));
+            attachButton.setBackground(Theme.createRoundBackgroundDrawable(getThemedColor(Theme.key_chat_topPanelBackground), dp(18)));
+            attachLayout.addView(attachButton, LayoutHelper.createLinear(48, 36));
             attachButton.setOnClickListener(v -> {
                 if (adjustPanLayoutHelper != null && adjustPanLayoutHelper.animationInProgress() || attachLayoutPaddingAlpha == 0f) {
                     return;
@@ -2694,7 +2695,8 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
         };
         sendButtonContainer.setClipChildren(false);
         sendButtonContainer.setClipToPadding(false);
-        textFieldContainer.addView(sendButtonContainer, LayoutHelper.createFrame(100, 48, Gravity.BOTTOM | Gravity.RIGHT));
+        sendButtonContainer.setBackground(Theme.createRoundBackgroundDrawable(getThemedColor(Theme.key_chat_topPanelBackground), dp(18)));
+        textFieldContainer.addView(sendButtonContainer, LayoutHelper.createFrame(48, 36, Gravity.BOTTOM | Gravity.RIGHT,0,0,0,6));
 
         audioVideoButtonContainer = new FrameLayout(context) {
 
@@ -2937,7 +2939,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
             }
         };
         audioVideoButtonContainer.setSoundEffectsEnabled(false);
-        sendButtonContainer.addView(audioVideoButtonContainer, LayoutHelper.createFrame(48, 48, Gravity.RIGHT | Gravity.BOTTOM));
+        sendButtonContainer.addView(audioVideoButtonContainer, LayoutHelper.createFrame(48, 36, Gravity.RIGHT | Gravity.BOTTOM,0,0,0,6));
         audioVideoButtonContainer.setFocusable(true);
         audioVideoButtonContainer.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
 
@@ -3174,7 +3176,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
         sendButton.setScaleX(0.1f);
         sendButton.setScaleY(0.1f);
         sendButton.setAlpha(0.0f);
-        sendButtonContainer.addView(sendButton, LayoutHelper.createFrame(100, 48, Gravity.RIGHT | Gravity.BOTTOM));
+        sendButtonContainer.addView(sendButton, LayoutHelper.createFrame(36, 36, Gravity.RIGHT | Gravity.BOTTOM,0,6,6,0));
         sendButton.setOnClickListener(view -> {
             if ((messageSendPreview != null && messageSendPreview.isShowing()) || (runningAnimationAudio != null && runningAnimationAudio.isRunning()) || moveToSendStateRunnable != null) {
                 return;
@@ -3303,7 +3305,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
         if (Build.VERSION.SDK_INT >= 21) {
             scheduledButton.setBackgroundDrawable(Theme.createSelectorDrawable(getThemedColor(Theme.key_listSelector)));
         }
-        messageEditTextContainer.addView(scheduledButton, 2, LayoutHelper.createFrame(48, 48, Gravity.BOTTOM | Gravity.RIGHT));
+        messageEditTextContainer.addView(scheduledButton, 2, LayoutHelper.createFrame(36, 36, Gravity.BOTTOM | Gravity.RIGHT));
         scheduledButton.setOnClickListener(v -> {
             if (delegate != null) {
                 delegate.openScheduledMessages();
@@ -3529,7 +3531,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
         if (Build.VERSION.SDK_INT >= 21) {
             expandStickersButton.setBackgroundDrawable(Theme.createSelectorDrawable(getThemedColor(Theme.key_listSelector)));
         }
-        sendButtonContainer.addView(expandStickersButton, LayoutHelper.createFrame(48, 48, Gravity.RIGHT | Gravity.BOTTOM));
+        sendButtonContainer.addView(expandStickersButton, LayoutHelper.createFrame(48, 36, Gravity.RIGHT | Gravity.BOTTOM,0,6,0,0));
         expandStickersButton.setOnClickListener(v -> {
             if (expandStickersButton.getVisibility() != VISIBLE || expandStickersButton.getAlpha() != 1.0f || waitingForKeyboardOpen || (keyboardVisible && messageEditText != null && messageEditText.isFocused())) {
                 return;
@@ -3969,7 +3971,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
             }
         });
         senderSelectView.setVisibility(GONE);
-        textFieldContainer.addView(senderSelectView, LayoutHelper.createFrame(32, 32, Gravity.BOTTOM | Gravity.LEFT, 10, 8, 10, 8));
+        textFieldContainer.addView(senderSelectView, LayoutHelper.createFrame(36, 36, Gravity.BOTTOM | Gravity.LEFT, 8, 8, 8, 6));
     }
 
     private void createBotCommandsMenuButton() {
@@ -5223,12 +5225,15 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
         messageEditText.setHandlesColor(getThemedColor(Theme.key_chat_TextSelectionCursor));
 
         messageEditBackground.setShape(GradientDrawable.RECTANGLE);
-        messageEditBackground.setColor(getThemedColor(Theme.key_windowBackgroundWhite));
-        messageEditBackground.setCornerRadius(dp(16));
+        messageEditBackground.setColor(getThemedColor(Theme.key_chat_topPanelBackground));
+        messageEditBackground.setCornerRadius(dp(18));
         messageEditBackground.setStroke(dp(1), getThemedColor(Theme.key_divider));
-        messageEditTextContainer.setBackground(messageEditBackground);
 
-        messageEditField.setPadding(0, dp(8), 0, dp(9));
+        Drawable liquidGlassDrawable = Theme.liquidGlassDrawable(dp(18), 2.5f, getThemedColor(Theme.key_chat_topPanelBackground), getThemedColor(Theme.key_divider));
+
+        messageEditField.setBackground(liquidGlassDrawable);
+
+//        messageEditField.setPadding(0, dp(8), 0, dp(9));
 
         messageEditTextContainer.addView(messageEditText, 1, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.BOTTOM, 16, 0, isChat ? 50 : 2, 1.5f));
         messageEditText.setOnKeyListener(new OnKeyListener() {
@@ -12745,9 +12750,9 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
             int width = senderSelectView.getLayoutParams().width, height = senderSelectView.getLayoutParams().height;
             senderSelectView.measure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
 //            ((MarginLayoutParams) emojiButton.getLayoutParams()).leftMargin = dp(16) + width;
-            ((MarginLayoutParams) attachLayout.getLayoutParams()).leftMargin = dp(16) + width;
+            ((MarginLayoutParams) attachLayout.getLayoutParams()).leftMargin = dp(8) + width;
             if (messageEditText != null) {
-                ((MarginLayoutParams) messageEditField.getLayoutParams()).leftMargin = dp(63) + width;
+                ((MarginLayoutParams) messageEditField.getLayoutParams()).leftMargin = dp(55) + width;
             }
         } else if (notifyButton != null && notifyButton.getVisibility() == View.VISIBLE) {
             ((MarginLayoutParams) attachLayout.getLayoutParams()).leftMargin = dp(3);

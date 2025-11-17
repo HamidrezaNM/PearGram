@@ -653,6 +653,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     private int reportReactionRow;
     private int reportDividerRow;
     private int addToContactsRow;
+    private int copyUserIdRow;
     private int addToGroupButtonRow;
     private int addToGroupInfoRow;
     private int premiumRow;
@@ -1194,6 +1195,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         private final Paint backgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
         public void setBackgroundColorId(MessagesController.PeerColor peerColor, boolean animated) {
+            if(actionsView != null)
+                actionsView.setForegroundColor(Color.WHITE);
             if (peerColor != null) {
                 hasColorById = true;
                 color1 = peerColor.getBgColor1(Theme.isCurrentThemeDark());
@@ -1211,7 +1214,9 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 hasColorById = false;
                 if (AndroidUtilities.computePerceivedBrightness(getThemedColor(Theme.key_actionBarDefault)) > .8f) {
                     emojiColor = getThemedColor(Theme.key_windowBackgroundWhiteBlueText);
-                    btnColor = Theme.multAlpha(getThemedColor(Theme.key_windowBackgroundWhiteBlueText), .15f);
+                    btnColor = Theme.multAlpha(getThemedColor(Theme.key_windowBackgroundWhite), 1f);
+                    if(actionsView != null)
+                        actionsView.setForegroundColor(getThemedColor(Theme.key_windowBackgroundWhiteBlueHeader));
                 } else if (AndroidUtilities.computePerceivedBrightness(getThemedColor(Theme.key_actionBarDefault)) < .2f) {
                     emojiColor = Theme.multAlpha(Theme.adaptHSV(getThemedColor(Theme.key_actionBarDefault), +0.02f, +0.25f), .5f);
                     btnColor = Theme.multAlpha(Theme.adaptHSV(getThemedColor(Theme.key_actionBarDefault), +0.02f, +0.25f), .35f);
@@ -1361,9 +1366,9 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 contentView.drawBlurRect(canvas, getY(), blurBounds, paint, true);
             }
 
-            if (parentLayout != null) {
-                parentLayout.drawHeaderShadow(canvas, (int) (headerShadowAlpha * 255), (int) v);
-            }
+//            if (parentLayout != null) {
+//                parentLayout.drawHeaderShadow(canvas, (int) (headerShadowAlpha * 255), (int) v);
+//            }
         }
 
         private Rect blurBounds = new Rect();
@@ -4183,6 +4188,15 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 args.putString("first_name_card", vcardFirstName);
                 args.putString("last_name_card", vcardLastName);
                 openAddToContact(user, args);
+            } else if (position == copyUserIdRow) {
+                try {
+                    android.content.ClipboardManager clipboard = (android.content.ClipboardManager) ApplicationLoader.applicationContext.getSystemService(Context.CLIPBOARD_SERVICE);
+                    BulletinFactory.of(this).createCopyBulletin(LocaleController.getString(R.string.UserIdCopied), resourcesProvider).show();
+                    android.content.ClipData clip = android.content.ClipData.newPlainText("label", "" + userId);
+                    clipboard.setPrimaryClip(clip);
+                } catch (Exception e) {
+                    FileLog.e(e);
+                }
             } else if (position == reportReactionRow) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity(), resourcesProvider);
                 builder.setTitle(LocaleController.getString(R.string.ReportReaction));
@@ -10390,6 +10404,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         reportRow = -1;
         reportReactionRow = -1;
         addToContactsRow = -1;
+        copyUserIdRow = -1;
         emptyRow = -1;
         infoHeaderRow = -1;
         infoHeaderRowEmpty = -1;
@@ -10569,9 +10584,9 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     final TLRPC.Chat channel = getMessagesController().getChat(userInfo.personal_channel_id);
                     if (channel != null && (ChatObject.isPublic(channel) || !ChatObject.isNotInChat(channel))) {
                         channelRow = rowCount++;
-                        channelDividerRow = rowCount++;
                     }
                 }
+                channelDividerRow = rowCount++;
                 infoStartRow = rowCount;
                 if (actionsView == null) {
                     infoHeaderRow = rowCount++;
@@ -10675,6 +10690,10 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
                 if (!myProfile && showAddToContacts && user != null && !user.contact && !user.bot && !UserObject.isService(user.id)) {
                     addToContactsRow = rowCount++;
+                    divider = true;
+                }
+                if ( user.id != 0) {
+                    copyUserIdRow = rowCount++;
                     divider = true;
                 }
                 if (!myProfile && reportReactionMessageId != 0 && !ContactsController.getInstance(currentAccount).isContact(userId)) {
@@ -13120,7 +13139,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     }
                     cell.getTextView().setPadding(0, AndroidUtilities.dp(14), 0, AndroidUtilities.dp(14));
                     view = cell;
-                    view.setBackgroundDrawable(Theme.getThemedDrawable(mContext, R.drawable.greydivider_bottom, getThemedColor(Theme.key_windowBackgroundGrayShadow)));
+//                    view.setBackgroundDrawable(Theme.getThemedDrawable(mContext, R.drawable.greydivider_bottom, getThemedColor(Theme.key_windowBackgroundGrayShadow)));
                     break;
                 }
                 case VIEW_TYPE_SUGGESTION: {
@@ -13193,8 +13212,10 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             if (viewType != VIEW_TYPE_SHARED_MEDIA) {
                 view.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));
 
-                ((ViewGroup.MarginLayoutParams) view.getLayoutParams()).leftMargin = dp(16);
-                ((ViewGroup.MarginLayoutParams) view.getLayoutParams()).rightMargin = dp(16);
+                if(viewType != VIEW_TYPE_MUSIC) {
+                    ((ViewGroup.MarginLayoutParams) view.getLayoutParams()).leftMargin = dp(16);
+                    ((ViewGroup.MarginLayoutParams) view.getLayoutParams()).rightMargin = dp(16);
+                }
             }
             return new RecyclerListView.Holder(view);
         }
@@ -13219,16 +13240,18 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-            boolean isTopRow = getItemViewType(position - 1) == VIEW_TYPE_HEADER;
-            boolean isBottomRow = getItemViewType(position + 1) == VIEW_TYPE_SHADOW || getItemViewType(position + 1) == VIEW_TYPE_HEADER || getItemViewType(position + 1) == VIEW_TYPE_VERSION;
-            boolean isShadowRow = getItemViewType(position) == VIEW_TYPE_SHADOW || getItemViewType(position) == VIEW_TYPE_VERSION;
+            boolean isTopRow = getItemViewType(position - 1) == VIEW_TYPE_HEADER || getItemViewType(position - 1) == VIEW_TYPE_SHADOW_TEXT || getItemViewType(position - 1) == VIEW_TYPE_SHADOW;
+            boolean isBottomRow = getItemViewType(position + 1) == VIEW_TYPE_SHADOW || getItemViewType(position + 1) == VIEW_TYPE_HEADER || getItemViewType(position + 1) == VIEW_TYPE_SHADOW_TEXT || getItemViewType(position + 1) == VIEW_TYPE_VERSION;
+            boolean isShadowRow = getItemViewType(position) == VIEW_TYPE_SHADOW || getItemViewType(position) == VIEW_TYPE_VERSION || getItemViewType(position) == VIEW_TYPE_SHADOW_TEXT;
 
             ListBackgroundDrawable listBackgroundDrawable = new ListBackgroundDrawable(isTopRow, isBottomRow, isShadowRow);
 
-            if(isTopRow || isBottomRow || isShadowRow)
-                holder.itemView.setBackground(listBackgroundDrawable);
-            else
-                holder.itemView.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+            if(holder.getItemViewType() != VIEW_TYPE_MUSIC) {
+                if(isTopRow || isBottomRow || isShadowRow)
+                    holder.itemView.setBackground(listBackgroundDrawable);
+                else
+                    holder.itemView.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+            }
 
             switch (holder.getItemViewType()) {
                 case VIEW_TYPE_HEADER:
@@ -13573,6 +13596,9 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     } else if (position == addToContactsRow) {
                         textCell.setTextAndIcon(LocaleController.getString(R.string.AddToContacts), R.drawable.msg_contact_add, false);
                         textCell.setColors(Theme.key_windowBackgroundWhiteBlueIcon, Theme.key_windowBackgroundWhiteBlueButton);
+                    } else if (position == copyUserIdRow) {
+                        textCell.setTextAndIcon(LocaleController.getString(R.string.CopyUserId), R.drawable.msg_copy, false);
+                        textCell.setColors(Theme.key_windowBackgroundWhiteBlueIcon, Theme.key_windowBackgroundWhiteBlueButton);
                     } else if (position == reportReactionRow) {
                         TLRPC.Chat chat = getMessagesController().getChat(-reportReactionFromDialogId);
                         if (chat != null && ChatObject.canBlockUsers(chat)) {
@@ -13801,11 +13827,11 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                             cell.setText(formatString(R.string.ProfileBotAffiliateProgramInfo, UserObject.getUserName(botUser), percents(userInfo != null && userInfo.starref_program != null ? userInfo.starref_program.commission_permille : 0)));
                         }
                     }
-                    if (position == infoSectionRow && lastSectionRow == -1 && secretSettingsSectionRow == -1 && sharedMediaRow == -1 && membersSectionRow == -1 || position == secretSettingsSectionRow || position == lastSectionRow || position == membersSectionRow && lastSectionRow == -1 && sharedMediaRow == -1) {
-                        cell.setBackgroundDrawable(Theme.getThemedDrawable(mContext, R.drawable.greydivider_bottom, getThemedColor(Theme.key_windowBackgroundGrayShadow)));
-                    } else {
-                        cell.setBackgroundDrawable(Theme.getThemedDrawable(mContext, R.drawable.greydivider, getThemedColor(Theme.key_windowBackgroundGrayShadow)));
-                    }
+//                    if (position == infoSectionRow && lastSectionRow == -1 && secretSettingsSectionRow == -1 && sharedMediaRow == -1 && membersSectionRow == -1 || position == secretSettingsSectionRow || position == lastSectionRow || position == membersSectionRow && lastSectionRow == -1 && sharedMediaRow == -1) {
+//                        cell.setBackgroundDrawable(Theme.getThemedDrawable(mContext, R.drawable.greydivider_bottom, getThemedColor(Theme.key_windowBackgroundGrayShadow)));
+//                    } else {
+//                        cell.setBackgroundDrawable(Theme.getThemedDrawable(mContext, R.drawable.greydivider, getThemedColor(Theme.key_windowBackgroundGrayShadow)));
+//                    }
                     break;
                 }
                 case VIEW_TYPE_COLORFUL_TEXT: {
@@ -14071,7 +14097,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     position == questionRow || position == devicesRow || position == filtersRow || position == stickersRow ||
                     position == faqRow || position == policyRow || position == sendLogsRow || position == sendLastLogsRow ||
                     position == clearLogsRow || position == switchBackendRow || position == setAvatarRow || position == addToGroupButtonRow ||
-                    position == addToContactsRow || position == liteModeRow || position == premiumGiftingRow || position == businessRow ||
+                    position == addToContactsRow || position == copyUserIdRow || position == liteModeRow || position == premiumGiftingRow || position == businessRow ||
                     position == botStarsBalanceRow || position == botTonBalanceRow || position == channelBalanceRow || position == botPermissionLocation ||
                     position == botPermissionBiometry || position == botPermissionEmojiStatus || position == tonRow
             ) {
@@ -15413,6 +15439,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             put(++pointer, reportRow, sparseIntArray);
             put(++pointer, reportReactionRow, sparseIntArray);
             put(++pointer, addToContactsRow, sparseIntArray);
+            put(++pointer, copyUserIdRow, sparseIntArray);
             put(++pointer, settingsTimerRow, sparseIntArray);
             put(++pointer, settingsKeyRow, sparseIntArray);
             put(++pointer, secretSettingsSectionRow, sparseIntArray);
