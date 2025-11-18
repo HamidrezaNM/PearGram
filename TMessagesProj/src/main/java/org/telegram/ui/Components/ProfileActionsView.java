@@ -1,6 +1,7 @@
 package org.telegram.ui.Components;
 
 import static org.telegram.messenger.AndroidUtilities.dp;
+import static org.telegram.messenger.AndroidUtilities.dpf2;
 import static org.telegram.messenger.LocaleController.getString;
 
 import android.annotation.SuppressLint;
@@ -117,10 +118,10 @@ public class ProfileActionsView extends View {
         paint.setColor(Color.BLACK);
         paint.setAlpha(40);
 
-        xpadding = AndroidUtilities.dpf2(14);
-        ypadding = AndroidUtilities.dpf2(12);
-        top = AndroidUtilities.dpf2(8);
-        textPadding = AndroidUtilities.dpf2(4);
+        xpadding = dpf2(14);
+        ypadding = dpf2(12);
+        top = dpf2(8);
+        textPadding = dpf2(4);
 
         this.targetHeight = (int) (targetHeight - ypadding - top);
 
@@ -385,7 +386,7 @@ public class ProfileActionsView extends View {
 
         updateBounds(action);
 
-        final float textY = action.drawable.getBounds().bottom + action.drawable.getBounds().top - action.text.getHeight() * action.textScale / 2.0f;
+        final float textY = action.drawable.getBounds().bottom + action.drawable.getBounds().top - action.text.getHeight() * action.textScale / 2.0f - dp(2);
 
         canvas.save();
         canvas.scale(action.textScale, action.textScale, cx, textY + action.text.getHeight() * action.textScale / 2.0f);
@@ -430,7 +431,7 @@ public class ProfileActionsView extends View {
                         Theme.multAlpha(Color.WHITE, .8f)
                 );
                 action.loadingDrawable.setAppearByGradient(true);
-                action.loadingDrawable.strokePaint.setStrokeWidth(AndroidUtilities.dpf2(1.25f));
+                action.loadingDrawable.strokePaint.setStrokeWidth(dpf2(1.25f));
             } else if (action.loadingDrawable.isDisappeared() || action.loadingDrawable.isDisappearing()) {
                 action.loadingDrawable.reset();
                 action.loadingDrawable.resetDisappear();
@@ -448,7 +449,7 @@ public class ProfileActionsView extends View {
     }
 
     public float getRoundRadius() {
-        return dp(8);
+        return dp(10);
     }
 
     private Action hit = null;
@@ -1057,7 +1058,7 @@ public class ProfileActionsView extends View {
                     false, null
                 );
                 drawable.setMasterParent(ProfileActionsView.this);
-                drawable.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteBlueHeader), PorterDuff.Mode.SRC_IN));
+                drawable.setColorFilter(new PorterDuffColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN));
                 drawable.start();
                 this.drawable = drawable;
             } else {

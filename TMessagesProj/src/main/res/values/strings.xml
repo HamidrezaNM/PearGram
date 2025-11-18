@@ -587,10 +587,8 @@
     <string name="ChannelCreator">Owner</string>
     <string name="ChannelAdministrator">Administrator</string>
     <string name="ChannelAdmin">Admin</string>
-    <string name="ChannelMute">Mute</string>
-    <string name="ChannelUnmute">Unmute</string>
-    <string name="ChannelMuteiOS">Mute</string>
-    <string name="ChannelUnmuteiOS">Unmute</string>
+    <string name="ChannelMute">MUTE</string>
+    <string name="ChannelUnmute">UNMUTE</string>
     <string name="ChannelAddAdmin">Add Admin</string>
     <string name="ChannelBlockUser">Remove User</string>
     <string name="GroupNotRestrictBoosters">Do Not Restrict Boosters</string>
