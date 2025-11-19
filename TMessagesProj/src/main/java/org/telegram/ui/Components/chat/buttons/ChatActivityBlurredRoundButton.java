@@ -175,6 +175,21 @@ public class ChatActivityBlurredRoundButton extends FrameLayout implements Facto
         return button;
     }
 
+    public void setProps(
+            BlurredBackgroundDrawableViewFactory factory,
+            BlurredBackgroundColorProvider colorProvider,
+            Theme.ResourcesProvider resourcesProvider,
+            @DrawableRes int res
+    ) {
+        final int color = Theme.getColor(Theme.key_glass_defaultIcon, resourcesProvider);
+
+        this.resourcesProvider = resourcesProvider;
+        this.setBlurredBackgroundDrawable(factory.create(this, colorProvider));
+        this.setIcon(res);
+        this.setIconColor(color);
+        this.setBackground(Theme.createSimpleSelectorRoundRectDrawableWithInset(dp(22), 0, Theme.multAlpha(color, .15f), dp(6)));
+    }
+
     public void updateColors() {
         if (backgroundDrawable != null) {
             backgroundDrawable.updateColors();

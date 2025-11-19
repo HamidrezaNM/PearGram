@@ -261,7 +261,7 @@ public class ChatInputViewsContainer extends FrameLayout {
         tmpRect.set(
             Math.round(inputBubbleOffsetLeft), 0,
             getMeasuredWidth() - Math.round(inputBubbleOffsetRight), inputBubbleHeightRound);
-        tmpRect.inset(0, -dp(7));
+        tmpRect.inset(0, -dp(1));
         tmpRect.offset(0, blurTop + (int) bubbleInputTranlationY);
 
         blurredBackgroundDrawable.setBounds(tmpRect);

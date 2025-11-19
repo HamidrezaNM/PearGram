@@ -4406,9 +4406,9 @@ public class ChatActivity extends BaseFragment implements
         chatInputViewsContainer.setBackgroundWithFadeDrawable(fadeDrawable);
         chatInputViewsContainer.setWindowInsetsProvider(windowInsetsStateHolder);
         chatInputViewsContainer.setInputIslandBubbleDrawable(
-            glassBackgroundDrawableFactory.create(chatInputViewsContainer, blurredBackgroundColorProvider));
+            glassBackgroundDrawableFactory.create(chatActivityEnterView, blurredBackgroundColorProvider));
         chatInputViewsContainer.setUnderKeyboardBackgroundDrawable(
-            glassBackgroundDrawableFactoryFrosted.create(chatInputViewsContainer, blurredBackgroundColorProvider));
+            glassBackgroundDrawableFactoryFrosted.create(chatActivityEnterView, blurredBackgroundColorProvider));
 
 
         chatInputBubbleContainer = chatInputViewsContainer.getInputIslandBubbleContainer();
@@ -7742,7 +7742,11 @@ public class ChatActivity extends BaseFragment implements
 
         chatActivityEnterView.setViewParentForEmoji(chatInputInAppContainer);
 
-        chatInputBubbleContainer.addView(chatActivityEnterView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.BOTTOM, 7, 0, 7, 0));
+        chatActivityEnterView.setBlurredBackgroundFactory(glassBackgroundDrawableFactory);
+
+        chatActivityEnterView.setChatInputViewsContainer(chatInputViewsContainer);
+
+        chatInputBubbleContainer.addView(chatActivityEnterView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.BOTTOM, 0, 0, 0, 0));
         contentView.addView(chatInputViewsContainer.getFadeView(), LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
         contentView.addView(chatInputViewsContainer, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
 
@@ -7822,7 +7826,7 @@ public class ChatActivity extends BaseFragment implements
         }
 
         final FrameLayout replyLayout = new FrameLayout(context);
-        chatActivityEnterTopView.addReplyView(replyLayout, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.NO_GRAVITY, 0, 0, 52, 0));
+        chatActivityEnterTopView.addReplyView(replyLayout, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.NO_GRAVITY, 52, 0, 52, 0));
 
         boolean[] byButtonPress = new boolean[1];
         replyLayout.setOnClickListener(v -> {
