@@ -120,6 +120,7 @@ public class StickersActivity extends BaseFragment implements NotificationCenter
     private int loopRow;
     private int loopInfoRow;
     private int largeEmojiRow;
+    private int reactionsDoubleTapEnabledRow;
     private int reactionsDoubleTapRow;
     private int stickersBotInfo;
     private int featuredRow;
@@ -460,6 +461,11 @@ public class StickersActivity extends BaseFragment implements NotificationCenter
             } else if (position == largeEmojiRow) {
                 SharedConfig.toggleBigEmoji();
                 ((TextCheckCell) view).setChecked(SharedConfig.allowBigEmoji);
+            } else if (position == reactionsDoubleTapEnabledRow) {
+                String reaction = MediaDataController.getInstance(currentAccount).getDoubleTapReaction();
+                boolean enabled = reaction != null && !reaction.isEmpty();
+                MediaDataController.getInstance(currentAccount).setDoubleTapReaction(enabled ? null : "❤");
+                ((TextCheckCell) view).setChecked(!enabled);
             } else if (position == suggestAnimatedEmojiRow) {
                 SharedConfig.toggleSuggestAnimatedEmoji();
                 ((TextCheckCell) view).setChecked(SharedConfig.suggestAnimatedEmoji);
@@ -733,12 +739,14 @@ public class StickersActivity extends BaseFragment implements NotificationCenter
             stickersSettingsRow = rowCount++;
             suggestRow = rowCount++;
             largeEmojiRow = rowCount++;
+            reactionsDoubleTapEnabledRow = rowCount++;
             dynamicPackOrder = rowCount++;
             dynamicPackOrderInfo = rowCount++;
         } else {
             stickersSettingsRow = -1;
             suggestRow = -1;
             largeEmojiRow = -1;
+            reactionsDoubleTapEnabledRow = -1;
             dynamicPackOrder = -1;
             dynamicPackOrderInfo = -1;
         }
@@ -1212,6 +1220,10 @@ public class StickersActivity extends BaseFragment implements NotificationCenter
                         cell.setTextAndCheck(LocaleController.getString(R.string.LoopAnimatedStickers), SharedConfig.loopStickers(), true);
                     } else if (position == largeEmojiRow) {
                         cell.setTextAndCheck(LocaleController.getString(R.string.LargeEmoji), SharedConfig.allowBigEmoji, true);
+                    } else if (position == reactionsDoubleTapEnabledRow) {
+                        String reaction = MediaDataController.getInstance(currentAccount).getDoubleTapReaction();
+                        boolean enabled = reaction != null && !reaction.isEmpty();
+                        cell.setTextAndCheck(LocaleController.getString(R.string.ReactionsDoubleTapEnabled), enabled, true);
                     } else if (position == suggestAnimatedEmojiRow) {
                         cell.setTextAndCheck(LocaleController.getString(R.string.SuggestAnimatedEmoji), SharedConfig.suggestAnimatedEmoji, false);
                     } else if (position == dynamicPackOrder) {
@@ -1403,7 +1415,7 @@ public class StickersActivity extends BaseFragment implements NotificationCenter
                 return TYPE_TEXT_AND_VALUE;
             } else if (i == stickersShadowRow || i == featuredStickersShadowRow) {
                 return TYPE_SHADOW;
-            } else if (i == loopRow || i == largeEmojiRow || i == suggestAnimatedEmojiRow || i == dynamicPackOrder) {
+            } else if (i == loopRow || i == largeEmojiRow || i == reactionsDoubleTapEnabledRow || i == suggestAnimatedEmojiRow || i == dynamicPackOrder) {
                 return TYPE_SWITCH;
             } else if (i == reactionsDoubleTapRow) {
                 return TYPE_DOUBLE_TAP_REACTIONS;

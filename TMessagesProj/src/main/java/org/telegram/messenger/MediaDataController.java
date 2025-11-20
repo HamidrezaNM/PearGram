@@ -8298,7 +8298,7 @@ public class MediaDataController extends BaseController {
                 doubleTapReaction = savedReaction;
                 return doubleTapReaction;
             }
-            return getReactionsList().get(0).reaction;
+//            return getReactionsList().get(0).reaction;
         }
         return null;
     }
