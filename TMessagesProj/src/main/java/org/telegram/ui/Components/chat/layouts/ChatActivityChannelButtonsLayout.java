@@ -50,12 +50,12 @@ public class ChatActivityChannelButtonsLayout extends FrameLayout implements Fac
         R.drawable.msg_help
     };
     private static final int[] buttonsOrderLeft = new int[] {
-        BUTTON_SEARCH
+        BUTTON_DIRECT,
+        BUTTON_GIFT,
+        BUTTON_GIGA_GROUP_INFO
     };
     private static final int[] buttonsOrderRight = new int[] {
-        BUTTON_GIFT,
-        BUTTON_DIRECT,
-        BUTTON_GIGA_GROUP_INFO
+        BUTTON_SEARCH
     };
 
     private final Theme.ResourcesProvider resourcesProvider;
@@ -79,7 +79,7 @@ public class ChatActivityChannelButtonsLayout extends FrameLayout implements Fac
                 outline.setRoundRect(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight(), dp(22));
             }
         });
-        addView(container, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 44, Gravity.CENTER_VERTICAL));
+        addView(container, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 50, Gravity.CENTER_VERTICAL));
     }
 
     public void updateColors() {
@@ -118,7 +118,7 @@ public class ChatActivityChannelButtonsLayout extends FrameLayout implements Fac
                     onClickListeners[buttonId].onClick(v);
                 }
             });
-            addView(button, LayoutHelper.createFrame(56, 56));
+            addView(button, LayoutHelper.createFrame(50, 50));
 
             buttonHolders[buttonId] = new ButtonHolder(button, visibilityAnimator);
             checkButtonsPositionsAndVisibility();

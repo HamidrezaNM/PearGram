@@ -8,17 +8,23 @@
 
 package org.telegram.ui.ActionBar;
 
+import static org.telegram.messenger.AndroidUtilities.dp;
+
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.view.animation.DecelerateInterpolator;
 
 import androidx.core.graphics.ColorUtils;
 
+import org.telegram.messenger.AccountInstance;
 import org.telegram.messenger.AndroidUtilities;
+import org.telegram.messenger.SharedConfig;
 import org.telegram.messenger.Utilities;
 
 public class BackDrawable extends Drawable {
@@ -39,6 +45,7 @@ public class BackDrawable extends Drawable {
     private float animationTime = 300.0f;
     private boolean rotated = true;
     private int arrowRotation;
+    private int unreadCount;
 
     public float getRotation() {
         return finalRotation;
@@ -46,9 +53,9 @@ public class BackDrawable extends Drawable {
 
     public BackDrawable(boolean close) {
         super();
-        paint.setStrokeWidth(AndroidUtilities.dp(2.25f));
+        paint.setStrokeWidth(dp(2.25f));
         paint.setStrokeCap(Paint.Cap.ROUND);
-        prevPaint.setStrokeWidth(AndroidUtilities.dp(2));
+        prevPaint.setStrokeWidth(dp(2));
         prevPaint.setColor(Color.RED);
         backColor = Theme.getColor(Theme.key_windowBackgroundWhiteBlueHeader);
         alwaysClose = close;
@@ -99,6 +106,8 @@ public class BackDrawable extends Drawable {
         rotated = value;
     }
 
+    public void setUnreadCount(int value) { unreadCount = value; }
+
     @Override
     public void draw(Canvas canvas) {
         if (currentRotation != finalRotation) {
@@ -137,13 +146,27 @@ public class BackDrawable extends Drawable {
         }
 //        canvas.drawLine(AndroidUtilities.dp(AndroidUtilities.lerp(-6.75f, -8f, rotation)), 0, AndroidUtilities.dp(8) - (paint.getStrokeWidth() / 2f) * (1f - rotation), 0, paint);
         float offsetX = -16f;
-        float startYDiff = AndroidUtilities.dp(-0.25f);
-        float endYDiff = AndroidUtilities.dp(AndroidUtilities.lerp(9f, 10f, rotation)) - (paint.getStrokeWidth() / 4f) * (1f - rotation);
-        float startXDiff = AndroidUtilities.dp(AndroidUtilities.lerp(-7f - 0.25f + offsetX, 0f + offsetX, rotation));
-        float endXDiff = AndroidUtilities.dp(offsetX + 1f);
+        float startYDiff = dp(-0.25f);
+        float endYDiff = dp(AndroidUtilities.lerp(9f, 10f, rotation)) - (paint.getStrokeWidth() / 4f) * (1f - rotation);
+        float startXDiff = dp(AndroidUtilities.lerp(-7f - 0.25f + offsetX, 0f + offsetX, rotation));
+        float endXDiff = dp(offsetX + 1f);
         canvas.drawLine(startXDiff, -startYDiff, endXDiff, -endYDiff, paint);
         canvas.drawLine(startXDiff, startYDiff, endXDiff, endYDiff, paint);
-        canvas.drawText("Back", AndroidUtilities.dp(-7f), AndroidUtilities.dp(5f), paint);
+
+        RectF rect = new RectF();
+        Paint unreadPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
+        unreadPaint.setColor(Color.WHITE);
+        unreadPaint.setTextSize(32);
+
+        rect.set(dp(-8.5f), dp(-8.5f), dp(8.5f), dp(8.5f));
+
+        if(unreadCount > 0) {
+            canvas.drawRoundRect(rect, dp(11.5f), dp(11.5f), paint);
+            canvas.drawText(Integer.toString(unreadCount), dp(-3.5f), dp(4.5f), unreadPaint);
+        } else {
+            canvas.drawText("Back", dp(-7f), dp(5f), paint);
+        }
         canvas.restore();
     }
 
@@ -164,11 +187,11 @@ public class BackDrawable extends Drawable {
 
     @Override
     public int getIntrinsicWidth() {
-        return AndroidUtilities.dp(24);
+        return dp(24);
     }
 
     @Override
     public int getIntrinsicHeight() {
-        return AndroidUtilities.dp(24);
+        return dp(24);
     }
 }

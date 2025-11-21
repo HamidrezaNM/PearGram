@@ -210,6 +210,10 @@ public class ActionBar extends FrameLayout {
     }
 
     public void setBackButtonDrawable(Drawable drawable) {
+        setBackButtonDrawable(drawable, 0);
+    }
+
+    public void setBackButtonDrawable(Drawable drawable, int unreadCount) {
         if (backButtonImageView == null) {
             createBackButtonImage();
         }
@@ -220,6 +224,7 @@ public class ActionBar extends FrameLayout {
             backDrawable.setRotation(isActionModeShowed() ? 1 : 0, false);
             backDrawable.setRotatedColor(itemsActionModeColor);
             backDrawable.setColor(itemsColor);
+            backDrawable.setUnreadCount(unreadCount);
         } else if (drawable instanceof MenuDrawable) {
             MenuDrawable menuDrawable = (MenuDrawable) drawable;
             menuDrawable.setBackColor(actionBarColor);

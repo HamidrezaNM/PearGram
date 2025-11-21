@@ -3590,7 +3590,7 @@ public class ChatActivity extends BaseFragment implements
         if (inPreviewMode) {
             actionBar.setBackButtonDrawable(null);
         } else {
-            actionBar.setBackButtonDrawable(new BackDrawable(isReport()));
+            actionBar.setBackButtonDrawable(new BackDrawable(isReport()), getMessagesStorage().getMainUnreadCount());
         }
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
@@ -8069,7 +8069,7 @@ public class ChatActivity extends BaseFragment implements
         bottomOverlay.setFocusable(true);
         bottomOverlay.setFocusableInTouchMode(true);
         bottomOverlay.setClickable(true);
-        chatInputBubbleContainer.addView(bottomOverlay, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 44, Gravity.BOTTOM, 7, 0, 7, 0));
+        chatInputBubbleContainer.addView(bottomOverlay, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 50, Gravity.BOTTOM, 7, 0, 7, 0));
 
         bottomOverlayText = new TextView(context);
         bottomOverlayText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
@@ -8152,8 +8152,11 @@ public class ChatActivity extends BaseFragment implements
                 }, 400);
             }
         });
+
+        chatInputViewsContainer.setInputBubbleOffsets(dp(42), dp(42));
+
         bottomChannelButtonsLayout.setOnButtonsTotalWidthChanged((l, r) -> {
-            chatInputViewsContainer.setInputBubbleOffsets(l, r);
+            chatInputViewsContainer.setInputBubbleOffsets(l + dp(42), r + dp(42));
         });
 
         chatInputBubbleContainer.addView(bottomChannelButtonsLayout, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 56, Gravity.BOTTOM, 0, 0, 0, (44 - 56) / 2));
@@ -8222,7 +8225,7 @@ public class ChatActivity extends BaseFragment implements
                 return themeDelegate;
             }
         };
-        bottomChannelButtonsLayout.getContainer().addView(bottomOverlayChatText, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, 0));
+        bottomChannelButtonsLayout.getContainer().addView(bottomOverlayChatText, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, 0,0,0,0,4));
         bottomOverlayChatText.setOnClickListener(view -> {
             if (getParentActivity() == null || pullingDownOffset != 0) {
                 return;
@@ -10121,6 +10124,7 @@ public class ChatActivity extends BaseFragment implements
         searchContainer.setClickable(false);
         searchContainer.setWillNotDraw(false);
         bottomViewsVisibilityController.setViewVisible(MESSAGE_SEARCH_CONTAINER, false, false);
+        chatInputViewsContainer.setInputBubbleOffsets(0,0);
         searchContainer.setClipToPadding(false);
 
         actionBar.showActionMode();
@@ -10217,6 +10221,8 @@ public class ChatActivity extends BaseFragment implements
                 }, themeDelegate).create());
             });
             searchCalendarButton.setContentDescription(LocaleController.getString(R.string.JumpToDate));
+
+            chatInputViewsContainer.setInputBubbleOffsets(0,0);
         }
     }
 
@@ -43966,9 +43972,9 @@ public class ChatActivity extends BaseFragment implements
 
     private float calculateInputIslandHeight(boolean target) {
         final float enterViewIslandHeight = Math.max(
-            chatActivityEnterView != null ? chatActivityEnterView.getIslandTotalHeight(target): 0, dp(44));
+            chatActivityEnterView != null ? chatActivityEnterView.getIslandTotalHeight(target): 0, dp(50));
 
-        final float defaultIslandHeight = dp(44);
+        final float defaultIslandHeight = dp(50);
         final float enterViewFactor;
         float visibility;
 
