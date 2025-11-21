@@ -721,6 +721,11 @@ public class ActionBar extends FrameLayout {
             return;
         }
         actionModeVisible = true;
+
+        if(menu != null) {
+            menu.setVisibility(VISIBLE);
+        }
+
         if (animated) {
             ArrayList<Animator> animators = new ArrayList<>();
             animators.add(ObjectAnimator.ofFloat(actionMode, View.ALPHA, 0.0f, 1.0f));
@@ -1073,6 +1078,10 @@ public class ActionBar extends FrameLayout {
                 viewsToHide.add(subtitleTextView);
                 subtitleTextView.setVisibility(visible ? INVISIBLE : VISIBLE);
             }
+        }
+
+        if(menu != null) {
+            menu.setVisibility(VISIBLE);
         }
 
         ValueAnimator alphaUpdate = ValueAnimator.ofFloat(searchFieldVisibleAlpha, visible ? 1f : 0f);

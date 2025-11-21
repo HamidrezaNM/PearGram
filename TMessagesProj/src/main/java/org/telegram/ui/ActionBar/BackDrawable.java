@@ -18,6 +18,7 @@ import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
+import android.text.TextPaint;
 import android.view.animation.DecelerateInterpolator;
 
 import androidx.core.graphics.ColorUtils;
@@ -154,16 +155,19 @@ public class BackDrawable extends Drawable {
         canvas.drawLine(startXDiff, startYDiff, endXDiff, endYDiff, paint);
 
         RectF rect = new RectF();
-        Paint unreadPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        TextPaint unreadPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
 
         unreadPaint.setColor(Color.WHITE);
         unreadPaint.setTextSize(32);
+        String counterText = Integer.toString(unreadCount);
 
-        rect.set(dp(-8.5f), dp(-8.5f), dp(8.5f), dp(8.5f));
+        int counterWidth = (int) Math.ceil(unreadPaint.measureText(counterText));
+
+        rect.set(dp(-8.5f), dp(-8.5f), counterWidth + dp(1.25f), dp(8.5f));
 
         if(unreadCount > 0) {
             canvas.drawRoundRect(rect, dp(11.5f), dp(11.5f), paint);
-            canvas.drawText(Integer.toString(unreadCount), dp(-3.5f), dp(4.5f), unreadPaint);
+            canvas.drawText(counterText, dp(-3.75f), dp(4.5f), unreadPaint);
         } else {
             canvas.drawText("Back", dp(-7f), dp(5f), paint);
         }

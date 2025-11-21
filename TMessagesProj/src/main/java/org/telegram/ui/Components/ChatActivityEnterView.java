@@ -5451,7 +5451,7 @@ public class ChatActivityEnterView extends FrameLayout implements
         messageEditText.setHintTextColor(getThemedColor(Theme.key_chat_messagePanelHint));
         messageEditText.setCursorColor(getThemedColor(Theme.key_chat_messagePanelCursor));
         messageEditText.setHandlesColor(getThemedColor(Theme.key_chat_TextSelectionCursor));
-        messageEditTextContainer.addView(messageEditText, 1, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.BOTTOM, 52, 0, isChat ? 50 : 44, 2.5f));
+        messageEditTextContainer.addView(messageEditText, 0, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.BOTTOM, 52, 0, isChat ? 50 : 44, 2.5f));
         messageEditText.setOnKeyListener(new OnKeyListener() {
 
             @Override
@@ -13046,7 +13046,8 @@ public class ChatActivityEnterView extends FrameLayout implements
                 ((MarginLayoutParams) messageEditText.getLayoutParams()).leftMargin = dp(63) + width;
             }
         } else {
-            ((MarginLayoutParams) attachButton.getLayoutParams()).leftMargin = dp(3);
+            if(attachButton != null)
+                ((MarginLayoutParams) attachButton.getLayoutParams()).leftMargin = dp(3);
             if (messageEditText != null) {
                 ((MarginLayoutParams) messageEditText.getLayoutParams()).leftMargin = dp(64);
             }

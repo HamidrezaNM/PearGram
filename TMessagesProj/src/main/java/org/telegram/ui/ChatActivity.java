@@ -10124,7 +10124,7 @@ public class ChatActivity extends BaseFragment implements
         searchContainer.setClickable(false);
         searchContainer.setWillNotDraw(false);
         bottomViewsVisibilityController.setViewVisible(MESSAGE_SEARCH_CONTAINER, false, false);
-        chatInputViewsContainer.setInputBubbleOffsets(0,0);
+//        chatInputViewsContainer.setInputBubbleOffsets(0,0);
         searchContainer.setClipToPadding(false);
 
         actionBar.showActionMode();
@@ -10222,7 +10222,7 @@ public class ChatActivity extends BaseFragment implements
             });
             searchCalendarButton.setContentDescription(LocaleController.getString(R.string.JumpToDate));
 
-            chatInputViewsContainer.setInputBubbleOffsets(0,0);
+//            chatInputViewsContainer.setInputBubbleOffsets(0,0);
         }
     }
 
@@ -33770,6 +33770,8 @@ public class ChatActivity extends BaseFragment implements
         if (searchItem != null) {
             searchItem.setSearchFieldText(text, false);
         }
+//        chatInputViewsContainer.setInputBubbleOffsets(0,0);
+
         getMediaDataController().searchMessagesInChat(searchingQuery = (text == null ? "" : text), dialog_id, mergeDialogId, classGuid, 0, threadMessageId, false, searchingUserMessages, searchingChatMessages, !TextUtils.isEmpty(text), searchingReaction);
         updatePinnedMessageView(true);
     }
@@ -44101,6 +44103,7 @@ public class ChatActivity extends BaseFragment implements
         if (searchContainer != null) {
             searchContainer.setTranslationY(-dp(54) * actionFactor);
         }
+//        chatInputViewsContainer.setInputBubbleOffsets(dp(44) * actionFactor, dp(44) * actionFactor);
         if (bottomChannelButtonsLayout != null) {
             bottomChannelButtonsLayout.setTranslationY(-dp(54) * actionFactor);
         }
