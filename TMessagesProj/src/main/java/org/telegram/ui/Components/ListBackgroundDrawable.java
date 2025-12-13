@@ -6,7 +6,7 @@ import org.telegram.messenger.AndroidUtilities;
 import org.telegram.ui.ActionBar.Theme;
 
 public class ListBackgroundDrawable extends GradientDrawable {
-    float radius = 10;
+    float radius = 24;
     public ListBackgroundDrawable(boolean isTopRow, boolean isBottomRow, boolean isShadowRow) {
         super();
 

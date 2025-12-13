@@ -692,7 +692,7 @@ public class MessagesController extends BaseController implements NotificationCe
         return !starsLocked;
     }
     public boolean premiumFeaturesBlocked() {
-        return premiumLocked && !getUserConfig().isPremium();
+        return premiumLocked && !getUserConfig().isPremium() && false;
     }
     public boolean premiumPurchaseBlocked() {
         return premiumLocked;
@@ -2769,7 +2769,7 @@ public class MessagesController extends BaseController implements NotificationCe
                     if (value.value instanceof TLRPC.TL_jsonBool) {
                         if (premiumLocked != ((TLRPC.TL_jsonBool) value.value).value) {
                             premiumLocked = ((TLRPC.TL_jsonBool) value.value).value;
-                            editor.putBoolean("premiumLocked", premiumLocked);
+                            editor.putBoolean("premiumLocked", false);
                             changed = true;
                         }
                     }
@@ -2779,7 +2779,7 @@ public class MessagesController extends BaseController implements NotificationCe
                     if (value.value instanceof TLRPC.TL_jsonBool) {
                         if (starsLocked != ((TLRPC.TL_jsonBool) value.value).value) {
                             starsLocked = ((TLRPC.TL_jsonBool) value.value).value;
-                            editor.putBoolean("starsLocked", starsLocked);
+                            editor.putBoolean("starsLocked", false);
                             changed = true;
                         }
                     }
@@ -6497,7 +6497,8 @@ public class MessagesController extends BaseController implements NotificationCe
                 return migratedTo.noforwards;
             }
         }
-        return chat.noforwards;
+//        return chat.noforwards;
+        return false;
     }
 
     public boolean isChatNoForwards(long chatId) {

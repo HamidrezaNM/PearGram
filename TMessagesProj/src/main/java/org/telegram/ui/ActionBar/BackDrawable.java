@@ -10,6 +10,7 @@ package org.telegram.ui.ActionBar;
 
 import static org.telegram.messenger.AndroidUtilities.dp;
 
+import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
@@ -45,8 +46,12 @@ public class BackDrawable extends Drawable {
     private int rotatedColor = 0xff757575;
     private float animationTime = 300.0f;
     private boolean rotated = true;
+    private float floating;
     private int arrowRotation;
     private int unreadCount;
+    private int unreadAlpha = 255;
+    private float cancelAlpha;
+    private float finalCancelAlpha;
 
     public float getRotation() {
         return finalRotation;
@@ -77,24 +82,28 @@ public class BackDrawable extends Drawable {
         invalidateSelf();
     }
 
+    public void setFloating(float value) {
+        floating = value;
+        invalidateSelf();
+    }
+
     public void setRotation(float rotation, boolean animated) {
         lastFrameTime = 0;
-        if (currentRotation == 1) {
-            reverseAngle = true;
-        } else if (currentRotation == 0) {
-            reverseAngle = false;
-        }
-        lastFrameTime = 0;
+//        if (currentRotation == 1) {
+//            reverseAngle = true;
+//        } else if (currentRotation == 0) {
+//            reverseAngle = false;
+//        }
         if (animated) {
-            if (currentRotation < rotation) {
-                currentAnimationTime = (int) (currentRotation * animationTime);
+            if (cancelAlpha < rotation) {
+                currentAnimationTime = (int) (cancelAlpha * animationTime);
             } else {
-                currentAnimationTime = (int) ((1.0f - currentRotation) * animationTime);
+                currentAnimationTime = (int) ((1.0f - cancelAlpha) * animationTime);
             }
             lastFrameTime = System.currentTimeMillis();
-            finalRotation = rotation;
+            finalCancelAlpha = rotation;
         } else {
-            finalRotation = currentRotation = rotation;
+            finalCancelAlpha = cancelAlpha = rotation;
         }
         invalidateSelf();
     }
@@ -108,21 +117,22 @@ public class BackDrawable extends Drawable {
     }
 
     public void setUnreadCount(int value) { unreadCount = value; }
+    public void setUnreadAlpha(int value) { unreadAlpha = value; }
 
     @Override
     public void draw(Canvas canvas) {
-        if (currentRotation != finalRotation) {
+        if (cancelAlpha != finalCancelAlpha) {
             if (lastFrameTime != 0) {
                 long dt = System.currentTimeMillis() - lastFrameTime;
 
                 currentAnimationTime += dt;
                 if (currentAnimationTime >= animationTime) {
-                    currentRotation = finalRotation;
+                    cancelAlpha = finalCancelAlpha;
                 } else {
-                    if (currentRotation < finalRotation) {
-                        currentRotation = interpolator.getInterpolation(currentAnimationTime / animationTime) * finalRotation;
+                    if (cancelAlpha < finalCancelAlpha) {
+                        cancelAlpha = interpolator.getInterpolation(currentAnimationTime / animationTime) * finalCancelAlpha;
                     } else {
-                        currentRotation = 1.0f - interpolator.getInterpolation(currentAnimationTime / animationTime);
+                        cancelAlpha = 1.0f - interpolator.getInterpolation(currentAnimationTime / animationTime);
                     }
                 }
             }
@@ -130,8 +140,29 @@ public class BackDrawable extends Drawable {
             invalidateSelf();
         }
 
-        paint.setColor(ColorUtils.blendARGB(backColor, rotatedColor, currentRotation));
         paint.setTextSize(44);
+        paint.setTextAlign(Paint.Align.CENTER);
+
+        if (floating != 0) {
+            TextPaint floatingPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
+
+            floatingPaint.setColor(Color.WHITE);
+            floatingPaint.setAlpha(Math.round(floating) * 80);
+
+            paint.setTextSize((1 - floating) * 44);
+
+            paint.setColor(ColorUtils.blendARGB(backColor, Color.WHITE, floating));
+
+            paint.setStrokeWidth(dp(2.25f - (floating * .75f)));
+
+            if(unreadCount != 0) {
+                unreadAlpha = (int) (0xFF * (1 - floating));
+            }
+
+            canvas.drawCircle(dp(8f), dp(11.5f), dp(14f), floatingPaint);
+        } else {
+            paint.setColor(ColorUtils.blendARGB(backColor, rotatedColor, currentRotation));
+        }
 
         canvas.save();
         canvas.translate(getIntrinsicWidth() / 2, getIntrinsicHeight() / 2);
@@ -146,11 +177,28 @@ public class BackDrawable extends Drawable {
             rotation = 1.0f;
         }
 //        canvas.drawLine(AndroidUtilities.dp(AndroidUtilities.lerp(-6.75f, -8f, rotation)), 0, AndroidUtilities.dp(8) - (paint.getStrokeWidth() / 2f) * (1f - rotation), 0, paint);
-        float offsetX = -16f;
+        float offsetX = -16f + (floating * 13f);
         float startYDiff = dp(-0.25f);
         float endYDiff = dp(AndroidUtilities.lerp(9f, 10f, rotation)) - (paint.getStrokeWidth() / 4f) * (1f - rotation);
         float startXDiff = dp(AndroidUtilities.lerp(-7f - 0.25f + offsetX, 0f + offsetX, rotation));
         float endXDiff = dp(offsetX + 1f);
+
+        startYDiff *= (1f - floating * .2f);
+        endYDiff *= (1f - floating * .2f);
+        startXDiff *= (1f - floating * .2f);
+        endXDiff *= (1f - floating * .2f);
+
+        TextPaint cancelPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
+
+        cancelPaint.setColor(backColor);
+        cancelPaint.setTextSize(44);
+        cancelPaint.setTextAlign(Paint.Align.CENTER);
+
+        if (cancelAlpha != 0) {
+            paint.setAlpha((int) (0xFF * (1 - cancelAlpha)));
+            cancelPaint.setAlpha((int) (0xFF * cancelAlpha));
+        }
+
         canvas.drawLine(startXDiff, -startYDiff, endXDiff, -endYDiff, paint);
         canvas.drawLine(startXDiff, startYDiff, endXDiff, endYDiff, paint);
 
@@ -159,18 +207,30 @@ public class BackDrawable extends Drawable {
 
         unreadPaint.setColor(Color.WHITE);
         unreadPaint.setTextSize(32);
+
         String counterText = Integer.toString(unreadCount);
 
         int counterWidth = (int) Math.ceil(unreadPaint.measureText(counterText));
 
         rect.set(dp(-8.5f), dp(-8.5f), counterWidth + dp(1.25f), dp(8.5f));
 
+        int paintAlpha = cancelAlpha != 0 ? (int) (0xFF * (1 - cancelAlpha)) : unreadAlpha;
         if(unreadCount > 0) {
+            paint.setAlpha(paintAlpha);
+            unreadPaint.setAlpha(paintAlpha);
             canvas.drawRoundRect(rect, dp(11.5f), dp(11.5f), paint);
             canvas.drawText(counterText, dp(-3.75f), dp(4.5f), unreadPaint);
-        } else {
-            canvas.drawText("Back", dp(-7f), dp(5f), paint);
         }
+        if(unreadCount == 0 || (unreadAlpha != 255 && floating == 0)) {
+            if (unreadAlpha != 255 && unreadCount != 0)
+                paint.setAlpha(255 - paintAlpha);
+            canvas.drawText("Back", dp(10f), dp(0f) - (paint.getFontMetrics().ascent + paint.getFontMetrics().descent) / 2f, paint);
+        }
+
+        if (cancelAlpha != 0) {
+            canvas.drawText("Cancel", dp(10f), dp(0f) - (paint.getFontMetrics().ascent + paint.getFontMetrics().descent) / 2f, cancelPaint);
+        }
+
         canvas.restore();
     }
 

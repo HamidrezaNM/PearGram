@@ -61,6 +61,7 @@ import org.telegram.ui.Cells.TextSettingsCell;
 import org.telegram.ui.Components.CheckBox2;
 import org.telegram.ui.Components.CubicBezierInterpolator;
 import org.telegram.ui.Components.LayoutHelper;
+import org.telegram.ui.Components.ListBackgroundDrawable;
 import org.telegram.ui.Components.NumberTextView;
 import org.telegram.ui.Components.RecyclerListView;
 import org.telegram.ui.Components.SlideChooseView;
@@ -87,6 +88,7 @@ public class ProxyListActivity extends BaseFragment implements NotificationCente
     private int rowCount;
     private int useProxyRow;
     private int useProxyShadowRow;
+    private int emptyHeaderRow;
     private int connectionsHeaderRow;
     private int proxyStartRow;
     private int proxyEndRow;
@@ -358,6 +360,7 @@ public class ProxyListActivity extends BaseFragment implements NotificationCente
         actionBar.setBackButtonDrawable(new BackDrawable(false));
         actionBar.setAllowOverlayTitle(true);
         actionBar.setTitle(LocaleController.getString(R.string.ProxySettings));
+        actionBar.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundGray));
         if (AndroidUtilities.isTablet()) {
             actionBar.setOccupyStatusBar(false);
         }
@@ -623,6 +626,7 @@ public class ProxyListActivity extends BaseFragment implements NotificationCente
 
     private void updateRows(boolean notify) {
         rowCount = 0;
+        emptyHeaderRow = rowCount++;
         useProxyRow = rowCount++;
         if (useProxySettings && SharedConfig.currentProxy != null && SharedConfig.proxyList.size() > 1 && IS_PROXY_ROTATION_AVAILABLE) {
             rotationRow = rowCount++;
@@ -878,13 +882,24 @@ public class ProxyListActivity extends BaseFragment implements NotificationCente
 
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+            boolean isTopRow = getItemViewType(position - 1) == 2 || (getItemViewType(position - 1) == 0 && getItemViewType(position) != 2);
+            boolean isBottomRow = getItemViewType(position + 1) == 0 || getItemViewType(position + 1) == 4;
+            boolean isShadowRow = getItemViewType(position) == 0 || getItemViewType(position) == 4;
+
+            ListBackgroundDrawable listBackgroundDrawable = new ListBackgroundDrawable(isTopRow, isBottomRow, isShadowRow);
+
+            if(isTopRow || isBottomRow || isShadowRow)
+                holder.itemView.setBackground(listBackgroundDrawable);
+            else
+                holder.itemView.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+
             switch (holder.getItemViewType()) {
                 case VIEW_TYPE_SHADOW: {
-                    if (position == proxyShadowRow && callsRow == -1) {
-                        holder.itemView.setBackgroundDrawable(Theme.getThemedDrawableByKey(mContext, R.drawable.greydivider_bottom, Theme.key_windowBackgroundGrayShadow));
-                    } else {
-                        holder.itemView.setBackgroundDrawable(Theme.getThemedDrawableByKey(mContext, R.drawable.greydivider, Theme.key_windowBackgroundGrayShadow));
-                    }
+//                    if (position == proxyShadowRow && callsRow == -1) {
+//                        holder.itemView.setBackgroundDrawable(Theme.getThemedDrawableByKey(mContext, R.drawable.greydivider_bottom, Theme.key_windowBackgroundGrayShadow));
+//                    } else {
+//                        holder.itemView.setBackgroundDrawable(Theme.getThemedDrawableByKey(mContext, R.drawable.greydivider, Theme.key_windowBackgroundGrayShadow));
+//                    }
                     break;
                 }
                 case VIEW_TYPE_TEXT_SETTING: {
@@ -903,6 +918,7 @@ public class ProxyListActivity extends BaseFragment implements NotificationCente
                     if (position == connectionsHeaderRow) {
                         headerCell.setText(LocaleController.getString(R.string.ProxyConnections));
                     }
+                    headerCell.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundGray));
                     break;
                 }
                 case VIEW_TYPE_TEXT_CHECK: {
@@ -1005,6 +1021,9 @@ public class ProxyListActivity extends BaseFragment implements NotificationCente
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view;
+            int padding = AndroidUtilities.dp(16);
+            parent.setPadding(padding, 0, padding, 0);
+
             switch (viewType) {
                 case VIEW_TYPE_SHADOW:
                     view = new ShadowSectionCell(mContext);
@@ -1015,7 +1034,7 @@ public class ProxyListActivity extends BaseFragment implements NotificationCente
                     break;
                 case VIEW_TYPE_HEADER:
                     view = new HeaderCell(mContext);
-                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundGray));
                     break;
                 case VIEW_TYPE_TEXT_CHECK:
                     view = new TextCheckCell(mContext);
@@ -1077,7 +1096,7 @@ public class ProxyListActivity extends BaseFragment implements NotificationCente
                 return VIEW_TYPE_TEXT_SETTING;
             } else if (position == useProxyRow || position == rotationRow || position == callsRow) {
                 return VIEW_TYPE_TEXT_CHECK;
-            } else if (position == connectionsHeaderRow) {
+            } else if (position == connectionsHeaderRow || position == emptyHeaderRow) {
                 return VIEW_TYPE_HEADER;
             } else if (position == rotationTimeoutRow) {
                 return VIEW_TYPE_SLIDE_CHOOSER;

@@ -79,6 +79,7 @@ public class ActionBar extends FrameLayout {
     public ImageView backButtonImageView;
     private BackupImageView avatarSearchImageView;
     private Drawable backButtonDrawable;
+    private BackDrawable backDrawableButton;
     private final SimpleTextView[] titleTextView = new SimpleTextView[2];
     private SimpleTextView subtitleTextView;
     private SimpleTextView additionalSubtitleTextView;
@@ -189,7 +190,7 @@ public class ActionBar extends FrameLayout {
         }
         backButtonImageView = new ImageView(getContext());
         backButtonImageView.setScaleType(ImageView.ScaleType.CENTER);
-        backButtonImageView.setBackgroundDrawable(Theme.createSelectorDrawable(itemsBackgroundColor));
+//        backButtonImageView.setBackgroundDrawable(Theme.createSelectorDrawable(itemsBackgroundColor));
         backButtonImageView.setPadding(dp(1), 0, 0, 0);
         addView(backButtonImageView, LayoutHelper.createFrame(54, 54, Gravity.LEFT | Gravity.TOP));
 
@@ -202,11 +203,30 @@ public class ActionBar extends FrameLayout {
                 actionBarMenuOnItemClick.onItemClick(-1);
             }
         });
+
+//        backButtonImageView.setOnTouchListener((v, event) -> {
+//            switch (event.getAction()) {
+//                case MotionEvent.ACTION_DOWN:
+//                    backDrawableButton.setAlpha(128);
+//                    break;
+//
+//                case MotionEvent.ACTION_UP:
+//                case MotionEvent.ACTION_CANCEL:
+//                    backDrawableButton.setAlpha(255);
+//                    break;
+//            }
+//            return false;
+//        });
+
         backButtonImageView.setContentDescription(LocaleController.getString(R.string.AccDescrGoBack));
     }
 
     public Drawable getBackButtonDrawable() {
         return backButtonDrawable;
+    }
+
+    public BackDrawable getBackDrawable() {
+        return backDrawableButton;
     }
 
     public void setBackButtonDrawable(Drawable drawable) {
@@ -225,6 +245,7 @@ public class ActionBar extends FrameLayout {
             backDrawable.setRotatedColor(itemsActionModeColor);
             backDrawable.setColor(itemsColor);
             backDrawable.setUnreadCount(unreadCount);
+            backDrawableButton = backDrawable;
         } else if (drawable instanceof MenuDrawable) {
             MenuDrawable menuDrawable = (MenuDrawable) drawable;
             menuDrawable.setBackColor(actionBarColor);

@@ -375,7 +375,7 @@ public class Switch extends View {
         int width = AndroidUtilities.dp(31);
         int thumb = AndroidUtilities.dp(20);
         int x = (getMeasuredWidth() - width) / 2;
-        float y = (getMeasuredHeight() - AndroidUtilities.dpf2(14)) / 2;
+        float y = (getMeasuredHeight() - AndroidUtilities.dpf2(20)) / 2;
         int tx = x + AndroidUtilities.dp(7) + (int) (AndroidUtilities.dp(17) * progress);
         int ty = getMeasuredHeight() / 2;
 
@@ -440,8 +440,8 @@ public class Switch extends View {
             paint.setColor(color);
             paint2.setColor(color);
 
-            rectF.set(x, y, x + width, y + AndroidUtilities.dpf2(14));
-            canvasToDraw.drawRoundRect(rectF, AndroidUtilities.dpf2(7), AndroidUtilities.dpf2(7), paint);
+            rectF.set(x, y, x + width, y + AndroidUtilities.dpf2(20));
+            canvasToDraw.drawRoundRect(rectF, AndroidUtilities.dpf2(10), AndroidUtilities.dpf2(10), paint);
             canvasToDraw.drawCircle(tx, ty, AndroidUtilities.dpf2(10), paint);
 
             if (a == 0 && rippleDrawable != null) {
