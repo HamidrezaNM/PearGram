@@ -33,6 +33,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
+import android.opengl.Visibility;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
@@ -58,6 +59,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
+import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
@@ -2174,25 +2176,33 @@ public class AlertsCreator {
     }
 
     public static void createClearOrDeleteDialogAlert(BaseFragment fragment, boolean clear, TLRPC.Chat chat, TLRPC.User user, boolean secret, boolean canDeleteHistory, MessagesStorage.BooleanCallback onProcessRunnable) {
-        createClearOrDeleteDialogAlert(fragment, clear, false, false, chat, user, secret, false, canDeleteHistory, onProcessRunnable, null);
+        createClearOrDeleteDialogAlert(fragment, clear, false, false, chat, user, secret, false, canDeleteHistory, onProcessRunnable, null, true);
     }
 
     public static void createClearOrDeleteDialogAlert(BaseFragment fragment, boolean clear, TLRPC.Chat chat, TLRPC.User user, boolean secret, boolean checkDeleteForAll, boolean canDeleteHistory, MessagesStorage.BooleanCallback onProcessRunnable) {
-        createClearOrDeleteDialogAlert(fragment, clear, chat != null && chat.creator, false, chat, user, secret, checkDeleteForAll, canDeleteHistory, onProcessRunnable, null);
+        createClearOrDeleteDialogAlert(fragment, clear, chat != null && chat.creator, false, chat, user, secret, checkDeleteForAll, canDeleteHistory, onProcessRunnable, null, true);
     }
 
     public static void createClearOrDeleteDialogAlert(BaseFragment fragment, boolean clear, TLRPC.Chat chat, TLRPC.User user, boolean secret, boolean checkDeleteForAll, boolean canDeleteHistory, MessagesStorage.BooleanCallback onProcessRunnable, Theme.ResourcesProvider resourcesProvider) {
-        createClearOrDeleteDialogAlert(fragment, clear, chat != null && chat.creator, false, chat, user, secret, checkDeleteForAll, canDeleteHistory, onProcessRunnable, resourcesProvider);
+        createClearOrDeleteDialogAlert(fragment, clear, chat != null && chat.creator, false, chat, user, secret, checkDeleteForAll, canDeleteHistory, onProcessRunnable, resourcesProvider, true);
+    }
+
+    public static void createClearOrDeleteDialogAlert(BaseFragment fragment, boolean clear, TLRPC.Chat chat, TLRPC.User user, boolean secret, boolean checkDeleteForAll, boolean canDeleteHistory, MessagesStorage.BooleanCallback onProcessRunnable, Theme.ResourcesProvider resourcesProvider, boolean verticalButtons) {
+        createClearOrDeleteDialogAlert(fragment, clear, chat != null && chat.creator, false, chat, user, secret, checkDeleteForAll, canDeleteHistory, onProcessRunnable, resourcesProvider, verticalButtons);
     }
 
     public static void createClearOrDeleteDialogAlert(BaseFragment fragment, boolean clear, boolean admin, boolean second, TLRPC.Chat chat, TLRPC.User user, boolean secret, boolean checkDeleteForAll, boolean canDeleteHistory, MessagesStorage.BooleanCallback onProcessRunnable, Theme.ResourcesProvider resourcesProvider) {
+        createClearOrDeleteDialogAlert(fragment, clear, admin, second, chat, user, secret, checkDeleteForAll, canDeleteHistory, onProcessRunnable, resourcesProvider, true);
+    }
+
+    public static void createClearOrDeleteDialogAlert(BaseFragment fragment, boolean clear, boolean admin, boolean second, TLRPC.Chat chat, TLRPC.User user, boolean secret, boolean checkDeleteForAll, boolean canDeleteHistory, MessagesStorage.BooleanCallback onProcessRunnable, Theme.ResourcesProvider resourcesProvider, boolean verticalButtons) {
         if (fragment == null || fragment.getParentActivity() == null || (chat == null && user == null)) {
             return;
         }
         int account = fragment.getCurrentAccount();
 
         Context context = fragment.getParentActivity();
-        AlertDialog.Builder builder = new AlertDialog.Builder(context, resourcesProvider);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context, resourcesProvider, verticalButtons);
         long selfUserId = UserConfig.getInstance(account).getClientUserId();
 
         CheckBoxCell[] cell = new CheckBoxCell[1];
@@ -2206,8 +2216,8 @@ public class AlertsCreator {
         };
         NotificationCenter.listenEmojiLoading(messageTextView);
         messageTextView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
-        messageTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
-        messageTextView.setGravity((LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP);
+        messageTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
+        messageTextView.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.TOP);
 
         boolean clearingCache = !canDeleteHistory && ChatObject.isChannel(chat) && ChatObject.isPublic(chat);
 
@@ -2222,22 +2232,28 @@ public class AlertsCreator {
         };
         builder.setCustomViewOffset(6);
         builder.setView(frameLayout);
+        if(!verticalButtons)
+            builder.setWidth(Theme.iOSDialogWidth);
 
         AvatarDrawable avatarDrawable = new AvatarDrawable();
         avatarDrawable.setTextSize(dp(18));
 
         BackupImageView imageView = new BackupImageView(context);
-        imageView.setRoundRadius(dp(20));
-        frameLayout.addView(imageView, LayoutHelper.createFrame(40, 40, (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP, 22, 5, 22, 0));
+        imageView.setRoundRadius(dp(27));
+        if (verticalButtons) {
+            frameLayout.addView(imageView, LayoutHelper.createFrame(54, 54, Gravity.CENTER_HORIZONTAL | Gravity.TOP, 22, 16, 22, 0));
+            frameLayout.setBackground(new ListBackgroundDrawable(true, false, false,16));
+        }
+
 
         TextView textView = new TextView(context);
         textView.setTextColor(Theme.getColor(Theme.key_actionBarDefaultSubmenuItem));
-        textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
         textView.setTypeface(AndroidUtilities.bold());
         textView.setLines(1);
         textView.setMaxLines(1);
         textView.setSingleLine(true);
-        textView.setGravity((LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.CENTER_VERTICAL);
+        textView.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.TOP);
         textView.setEllipsize(TextUtils.TruncateAt.END);
         if (clear) {
             if (clearingCache) {
@@ -2274,8 +2290,9 @@ public class AlertsCreator {
                 }
             }
         }
-        frameLayout.addView(textView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP, (LocaleController.isRTL ? 21 : 76), 11, (LocaleController.isRTL ? 76 : 21), 0));
-        frameLayout.addView(messageTextView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP, 24, 57, 24, 1));
+        if(!verticalButtons)
+            frameLayout.addView(textView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL | Gravity.TOP, 0, 0, 0, 0));
+        frameLayout.addView(messageTextView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL | Gravity.TOP, 24, verticalButtons ? 80 : 28, 24, verticalButtons ? 12 : 16));
 
         final TLRPC.Chat mfChat = ChatObject.isMonoForum(chat) ? fragment.getMessagesController().getMonoForumLinkedChat(chat.id) : null;
         boolean canRevokeInbox = user != null && !user.bot && user.id != selfUserId && MessagesController.getInstance(account).canRevokePmInbox;
@@ -2449,7 +2466,7 @@ public class AlertsCreator {
                         } else if (chat.megagroup) {
                             actionText = LocaleController.getString(R.string.LeaveMegaMenu);
                         } else {
-                            actionText = LocaleController.getString(R.string.LeaveChannelMenu);
+                            actionText = LocaleController.getString(R.string.LeaveChannel);
                         }
                     } else {
                         actionText = LocaleController.getString(R.string.DeleteChatUser);
@@ -2492,15 +2509,15 @@ public class AlertsCreator {
         int account = fragment.getCurrentAccount();
 
         Context context = fragment.getParentActivity();
-        AlertDialog.Builder builder = new AlertDialog.Builder(context, resourcesProvider);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context, resourcesProvider, true);
         long selfUserId = UserConfig.getInstance(account).getClientUserId();
 
         CheckBoxCell[] cell = new CheckBoxCell[1];
         boolean[] deleteForAll = new boolean[1];
         TextView messageTextView = new TextView(context);
         messageTextView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
-        messageTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
-        messageTextView.setGravity((LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP);
+        messageTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
+        messageTextView.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.TOP);
         FrameLayout frameLayout = new FrameLayout(context) {
             @Override
             protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -2511,7 +2528,7 @@ public class AlertsCreator {
             }
         };
         builder.setCustomViewOffset(6);
-        builder.setView(frameLayout);
+//        builder.setView(frameLayout);
 
         TextView textView = new TextView(context);
         textView.setTextColor(Theme.getColor(Theme.key_actionBarDefaultSubmenuItem));
@@ -2547,10 +2564,12 @@ public class AlertsCreator {
             }
         }
 
-        frameLayout.addView(textView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP, 24, 11, 24, 0));
-        frameLayout.addView(messageTextView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP, 24, 57, 24, 1));
+//        frameLayout.addView(textView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP, 24, 11, 24, 0));
+        frameLayout.addView(messageTextView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER, 24, 57, 24, 1));
 
-        String actionText = canDeleteHistory ? LocaleController.getString("Delete", R.string.Delete)
+        frameLayout.setBackground(new ListBackgroundDrawable(true, false, false,16));
+
+        String actionText = canDeleteHistory ? LocaleController.formatString("DeleteFewChatsTitle", R.string.DeleteFewChatsTitle, LocaleController.formatPluralString("ChatsSelected", count))
                 : canClearCacheCount != 0 ? LocaleController.getString("ClearHistoryCache", R.string.ClearHistoryCache)
                 : LocaleController.getString("ClearHistory", R.string.ClearHistory);
         builder.setPositiveButton(actionText, (dialogInterface, i) -> {
@@ -2559,7 +2578,14 @@ public class AlertsCreator {
             }
         });
         builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
+
         AlertDialog alertDialog = builder.create();
+
+        Window window = alertDialog.getWindow();
+        WindowManager.LayoutParams layoutParams = window.getAttributes();
+        layoutParams.gravity = Gravity.BOTTOM;
+        window.setAttributes(layoutParams);
+
         fragment.showDialog(alertDialog);
         TextView button = (TextView) alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
         if (button != null) {

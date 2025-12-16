@@ -46,11 +46,11 @@ public class TextInfoPrivacyCell extends FrameLayout {
     private final Theme.ResourcesProvider resourcesProvider;
 
     public TextInfoPrivacyCell(Context context) {
-        this(context, 21, null);
+        this(context, 17, null);
     }
 
     public TextInfoPrivacyCell(Context context, Theme.ResourcesProvider resourcesProvider) {
-        this(context, 21, resourcesProvider);
+        this(context, 17, resourcesProvider);
     }
 
     public TextInfoPrivacyCell(Context context, int padding) {
@@ -77,7 +77,7 @@ public class TextInfoPrivacyCell extends FrameLayout {
                 return super.overrideColor();
             }
         };
-        textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
         textView.setGravity(LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT);
         textView.setPadding(0, AndroidUtilities.dp(10), 0, AndroidUtilities.dp(17));
         textView.setMovementMethod(LinkMovementMethod.getInstance());

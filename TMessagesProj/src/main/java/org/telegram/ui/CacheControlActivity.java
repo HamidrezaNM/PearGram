@@ -15,6 +15,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PorterDuff;
@@ -96,6 +97,7 @@ import org.telegram.ui.Components.CubicBezierInterpolator;
 import org.telegram.ui.Components.FlickerLoadingView;
 import org.telegram.ui.Components.HideViewAfterAnimation;
 import org.telegram.ui.Components.LayoutHelper;
+import org.telegram.ui.Components.ListBackgroundDrawable;
 import org.telegram.ui.Components.ListView.AdapterWithDiffUtils;
 import org.telegram.ui.Components.LoadingDrawable;
 import org.telegram.ui.Components.NestedSizeNotifierLayout;
@@ -1321,9 +1323,9 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
                     invalidate();
                 }
                 actionBarShadowAlpha = Utilities.clamp(actionBarShadowAlpha, 1f, 0);
-                if (parentLayout != null) {
-                    parentLayout.drawHeaderShadow(canvas, (int) (0xFF * actionBarShownT * actionBarShadowAlpha), AndroidUtilities.statusBarHeight + ActionBar.getCurrentActionBarHeight());
-                }
+//                if (parentLayout != null) {
+//                    parentLayout.drawHeaderShadow(canvas, (int) (0xFF * actionBarShownT * actionBarShadowAlpha), AndroidUtilities.statusBarHeight + ActionBar.getCurrentActionBarHeight());
+//                }
             }
         };
         fragmentView = nestedSizeNotifierLayout;
@@ -1334,7 +1336,7 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
             @Override
             protected void dispatchDraw(Canvas canvas) {
                 if (sectionsStartRow >= 0 && sectionsEndRow >= 0) {
-                    drawSectionBackgroundExclusive(canvas, sectionsStartRow - 1, sectionsEndRow, Theme.getColor(Theme.key_windowBackgroundWhite));
+//                    drawSectionBackgroundExclusive(canvas, sectionsStartRow - 1, sectionsEndRow, Theme.getColor(Theme.key_windowBackgroundWhite));
                 }
                 super.dispatchDraw(canvas);
             }
@@ -1347,7 +1349,7 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
 
         listView.setVerticalScrollBarEnabled(false);
         listView.setClipToPadding(false);
-        listView.setPadding(0, AndroidUtilities.statusBarHeight + ActionBar.getCurrentActionBarHeight() / 2, 0, 0);
+        listView.setPadding(AndroidUtilities.dp(16), AndroidUtilities.statusBarHeight + ActionBar.getCurrentActionBarHeight() / 2, AndroidUtilities.dp(16), 0);
         listView.setLayoutManager(layoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
         frameLayout.addView(listView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
         listView.setAdapter(listAdapter);
@@ -1749,14 +1751,14 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
                     super.onMeasure(MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(widthMeasureSpec) + getPaddingLeft() + getPaddingRight(), MeasureSpec.EXACTLY), heightMeasureSpec);
                 }
             };
-            Drawable bottomImageDrawable = getContext().getResources().getDrawable(R.drawable.popup_fixed_alert2).mutate();
-            bottomImageDrawable.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_windowBackgroundWhite), PorterDuff.Mode.MULTIPLY));
-            bottomImage.setBackground(bottomImageDrawable);
-            MarginLayoutParams bottomImageParams = LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 24, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL);
-            bottomImageParams.leftMargin = -bottomImage.getPaddingLeft();
-            bottomImageParams.bottomMargin = -AndroidUtilities.dp(11);
-            bottomImageParams.rightMargin = -bottomImage.getPaddingRight();
-            addView(bottomImage, bottomImageParams);
+//            Drawable bottomImageDrawable = new ListBackgroundDrawable(true, false, false);
+//            bottomImageDrawable.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_windowBackgroundWhite), PorterDuff.Mode.MULTIPLY));
+//            bottomImage.setBackground(bottomImageDrawable);
+//            MarginLayoutParams bottomImageParams = LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 24, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL);
+//            bottomImageParams.leftMargin = -bottomImage.getPaddingLeft();
+//            bottomImageParams.bottomMargin = -AndroidUtilities.dp(11);
+//            bottomImageParams.rightMargin = -bottomImage.getPaddingRight();
+//            addView(bottomImage, bottomImageParams);
 
             int color = Theme.getColor(Theme.key_windowBackgroundWhiteGrayText4);
             loadingDrawable.setColors(
@@ -2016,7 +2018,7 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
             super(context);
             ((MarginLayoutParams) button.getLayoutParams()).topMargin = AndroidUtilities.dp(5);
             button.setOnClickListener(e -> {
-                AlertDialog dialog =  new AlertDialog.Builder(getContext())
+                AlertDialog dialog =  new AlertDialog.Builder(getContext(), true)
                     .setTitle(LocaleController.getString(R.string.ClearCache) + (TextUtils.isEmpty(valueTextView.getText()) ? "" : " (" + valueTextView.getText() + ")"))
                     .setMessage(LocaleController.getString(R.string.StorageUsageInfo))
                     .setPositiveButton(textView.getText(), (di, v) -> doClearCache())
@@ -2026,7 +2028,7 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
                 View clearButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
                 if (clearButton instanceof TextView) {
                     ((TextView) clearButton).setTextColor(Theme.getColor(Theme.key_text_RedRegular));
-                    clearButton.setBackground(Theme.getRoundRectSelectorDrawable(AndroidUtilities.dp(6), Theme.multAlpha(Theme.getColor(Theme.key_text_RedRegular), .12f)));
+//                    clearButton.setBackground(Theme.getRoundRectSelectorDrawable(AndroidUtilities.dp(6), Theme.multAlpha(Theme.getColor(Theme.key_text_RedRegular), .12f)));
                 }
             });
         }
@@ -2162,14 +2164,14 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
                     return true;
                 }
             };
-            button.setBackground(Theme.AdaptiveRipple.filledRectByKey(Theme.key_featuredStickers_addButton, 8));
+            button.setBackground(Theme.AdaptiveRipple.filledRectByKey(Theme.key_featuredStickers_addButton, 24));
             button.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_YES);
 
             if (LocaleController.isRTL) {
                 rtlTextView = new TextView(context);
                 rtlTextView.setText(LocaleController.getString(R.string.ClearCache));
                 rtlTextView.setGravity(Gravity.CENTER);
-                rtlTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+                rtlTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
                 rtlTextView.setTypeface(AndroidUtilities.bold());
                 rtlTextView.setTextColor(Theme.getColor(Theme.key_featuredStickers_buttonText));
                 button.addView(rtlTextView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.MATCH_PARENT, Gravity.CENTER));
@@ -2178,7 +2180,7 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
             textView = new AnimatedTextView.AnimatedTextDrawable(true, true, true);
             textView.setAnimationProperties(.25f, 0, 300, CubicBezierInterpolator.EASE_OUT_QUINT);
             textView.setCallback(button);
-            textView.setTextSize(AndroidUtilities.dp(14));
+            textView.setTextSize(AndroidUtilities.dp(16));
             textView.setText(LocaleController.getString(R.string.ClearCache));
             textView.setGravity(Gravity.RIGHT);
             textView.setTypeface(AndroidUtilities.bold());
@@ -2187,7 +2189,7 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
             valueTextView = new AnimatedTextView.AnimatedTextDrawable(true, true, true);
             valueTextView.setAnimationProperties(.25f, 0, 300, CubicBezierInterpolator.EASE_OUT_QUINT);
             valueTextView.setCallback(button);
-            valueTextView.setTextSize(AndroidUtilities.dp(14));
+            valueTextView.setTextSize(AndroidUtilities.dp(16));
             valueTextView.setTypeface(AndroidUtilities.bold());
             valueTextView.setTextColor(Theme.blendOver(Theme.getColor(Theme.key_featuredStickers_addButton), Theme.multAlpha(Theme.getColor(Theme.key_featuredStickers_buttonText), .7f)));
             valueTextView.setText("");
@@ -2480,7 +2482,7 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
                     break;
                 case VIEW_TYPE_SECTION:
                     view = new CheckBoxCell(mContext, 4, 21, getResourceProvider());
-                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+//                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
                 case VIEW_TYPE_INFO:
                 default:
@@ -2602,6 +2604,19 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
 
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+            if(position > 1 && position < itemInners.size() - 1) {
+                boolean isTopRow = getItemViewType(position - 1) == 3;
+                boolean isBottomRow = getItemViewType(position + 1) == 1 || getItemViewType(position + 1) == 4;
+                boolean isShadowRow = getItemViewType(position) == 1 || getItemViewType(position) == 4;
+
+                ListBackgroundDrawable listBackgroundDrawable = new ListBackgroundDrawable(isTopRow, isBottomRow, isShadowRow);
+
+                if (isTopRow || isBottomRow || isShadowRow)
+                    holder.itemView.setBackground(listBackgroundDrawable);
+                else
+                    holder.itemView.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+            }
+
             final ItemInner item = itemInners.get(position);
             switch (holder.getItemViewType()) {
                 case VIEW_TYPE_CHART:
@@ -2626,6 +2641,8 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
                     }
                     cell.setText(getCheckBoxTitle(item.headerName, percents[item.index < 0 ? 9 : item.index], item.index < 0), AndroidUtilities.formatFileSize(item.size), selected, item.index < 0 ? !collapsed : !item.last);
                     cell.setCheckBoxColor(item.colorKey, Theme.key_windowBackgroundWhiteGrayIcon, Theme.key_checkboxCheck);
+                    if(getItemViewType(position - 1) == VIEW_TYPE_CHART_HEADER)
+                        cell.setBackground(new ListBackgroundDrawable(true, false, false));
                     cell.setCollapsed(item.index < 0 ? collapsed : null);
                     if (item.index == -1) {
                         cell.setOnSectionsClickListener(e -> {
@@ -2679,7 +2696,7 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
 //                        privacyCell.setBackgroundDrawable(Theme.getThemedDrawable(mContext, R.drawable.greydivider, Theme.key_windowBackgroundGrayShadow));
 //                    } else {
                         privacyCell.setText(AndroidUtilities.replaceTags(item.text));
-                        privacyCell.setBackgroundDrawable(Theme.getThemedDrawableByKey(mContext, R.drawable.greydivider, Theme.key_windowBackgroundGrayShadow));
+//                        privacyCell.setBackgroundDrawable(Theme.getThemedDrawableByKey(mContext, R.drawable.greydivider, Theme.key_windowBackgroundGrayShadow));
 //                    }
                     break;
                 case VIEW_TYPE_STORAGE:
@@ -2691,6 +2708,7 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
                     headerCell.setText(itemInners.get(position).headerName);
                     headerCell.setTopMargin(itemInners.get(position).headerTopMargin);
                     headerCell.setBottomMargin(itemInners.get(position).headerBottomMargin);
+                    headerCell.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundGray));
                     break;
             }
         }

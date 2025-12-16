@@ -3072,6 +3072,8 @@ public class Theme {
     public static double autoNightLocationLatitude = 10000;
     public static double autoNightLocationLongitude = 10000;
 
+    public static int iOSDialogWidth = dp(240);
+
     private static Paint maskPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
     private static int loadingCurrentTheme;
@@ -5517,6 +5519,14 @@ public class Theme {
                 new int[]{(color & 0x00ffffff) | 0x19000000}
         );
         return new BaseCell.RippleDrawableSafe(colorStateList, null, maskDrawable);
+    }
+
+    public static Drawable createSelectorWithBackgroundShapeDrawable(Drawable backgroundShape, int color) {
+        ColorStateList colorStateList = new ColorStateList(
+                new int[][]{StateSet.WILD_CARD},
+                new int[]{color}
+        );
+        return new BaseCell.RippleDrawableSafe(colorStateList, backgroundShape, backgroundShape);
     }
 
     public static Drawable createSelectorWithBackgroundDrawable(int backgroundColor, int color) {

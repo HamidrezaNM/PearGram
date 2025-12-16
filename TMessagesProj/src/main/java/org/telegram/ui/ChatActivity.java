@@ -4120,7 +4120,7 @@ public class ChatActivity extends BaseFragment implements
             searchItemVisible = false;
         }
 
-        if (chatMode == 0 && (threadMessageId == 0 || isTopic) && !UserObject.isReplyUser(currentUser) && !isReport()) {
+        if (chatMode == 0 && (threadMessageId == 0 || isTopic) && !UserObject.isReplyUser(currentUser) && !isReport() && false) {
             TLRPC.UserFull userFull = null;
             if (currentUser != null) {
                 audioCallIconItem = menu.lazilyAddItem(call, R.drawable.ic_call, themeDelegate);
@@ -4133,9 +4133,9 @@ public class ChatActivity extends BaseFragment implements
                     showAudioCallAsIcon = false;
                     audioCallIconItem.setVisibility(View.GONE);
                 }
-                if (avatarContainer != null) {
-                    avatarContainer.setTitleExpand(showAudioCallAsIcon);
-                }
+//                if (avatarContainer != null) {
+//                    avatarContainer.setTitleExpand(showAudioCallAsIcon);
+//                }
             }
         }
 
@@ -9904,6 +9904,7 @@ public class ChatActivity extends BaseFragment implements
         selectedMessagesCountTextView.setTextSize(18);
         selectedMessagesCountTextView.setTypeface(AndroidUtilities.bold());
         selectedMessagesCountTextView.setTextColor(getThemedColor(Theme.key_actionBarActionModeDefaultIcon));
+        selectedMessagesCountTextView.setCenterAlign(true);
         selectedMessagesCountTextView.setOnTouchListener((v, event) -> true);
         actionMode.addView(selectedMessagesCountTextView, LayoutHelper.createLinear(0, LayoutHelper.MATCH_PARENT, 1.0f, 65, 0, 0, 0));
 
@@ -23052,9 +23053,9 @@ public class ChatActivity extends BaseFragment implements
                 }
                 if (headerItem != null) {
                     showAudioCallAsIcon = userInfo.phone_calls_available && !inPreviewMode;
-                    if (avatarContainer != null) {
-                        avatarContainer.setTitleExpand(showAudioCallAsIcon);
-                    }
+//                    if (avatarContainer != null) {
+//                        avatarContainer.setTitleExpand(showAudioCallAsIcon);
+//                    }
                     if (userInfo.phone_calls_available) {
                         if (showAudioCallAsIcon) {
                             if (audioCallIconItem != null) {
@@ -28831,7 +28832,7 @@ public class ChatActivity extends BaseFragment implements
         }
         if (avatarContainer != null) {
             avatarContainer.setOccupyStatusBar(!value);
-            avatarContainer.setTitleExpand(showAudioCallAsIcon);
+//            avatarContainer.setTitleExpand(showAudioCallAsIcon);
             avatarContainer.setLayoutParams(LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.MATCH_PARENT, Gravity.TOP | Gravity.LEFT, !value ? 56 : (chatMode == MODE_PINNED ? 10 : 0), 0, 40, 0));
         }
         if (chatActivityEnterView != null) {

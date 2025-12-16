@@ -383,7 +383,7 @@ public class ProxyListActivity extends BaseFragment implements NotificationCente
         listView = new RecyclerListView(context) {
             @Override
             protected void dispatchDraw(Canvas canvas) {
-                drawSectionBackground(canvas, proxyStartRow, proxyEndRow, Theme.getColor(Theme.key_windowBackgroundWhite));
+//                drawSectionBackground(canvas, proxyStartRow, proxyEndRow, Theme.getColor(Theme.key_windowBackgroundWhite));
                 super.dispatchDraw(canvas);
             }
         };

@@ -4549,7 +4549,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                                 BuildVars.DEBUG_PRIVATE_VERSION ? getString(SharedConfig.isFloatingDebugActive ? R.string.FloatingDebugDisable : R.string.FloatingDebugEnable) : null,
                                 BuildVars.DEBUG_PRIVATE_VERSION ? "Force remove premium suggestions" : null,
                                 BuildVars.DEBUG_PRIVATE_VERSION ? "Share device info" : null,
-                                BuildVars.DEBUG_PRIVATE_VERSION ? "Force performance class" : null,
+                                "Force performance class",
                                 BuildVars.DEBUG_PRIVATE_VERSION && !InstantCameraView.allowBigSizeCameraDebug() ? !SharedConfig.bigCameraForRound ? "Force big camera for round" : "Disable big camera for round" : null,
                                 getString(DualCameraView.dualAvailableStatic(getContext()) ? "DebugMenuDualOff" : "DebugMenuDualOn"),
                                 BuildVars.DEBUG_VERSION ? SharedConfig.useSurfaceInStories ? "back to TextureView in stories" : "use SurfaceView in stories" : null,
@@ -7697,7 +7697,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             getNotificationCenter().postNotificationName(NotificationCenter.closeChats);
             finishFragment();
             getNotificationCenter().postNotificationName(NotificationCenter.needDeleteDialog, -currentChat.id, null, currentChat, param);
-        }, resourcesProvider);
+        }, resourcesProvider, false);
     }
 
     private void getChannelParticipants(boolean reload) {
@@ -8467,6 +8467,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 (actionBar.getOccupyStatusBar() ? AndroidUtilities.statusBarHeight : 0)
                 + ActionBar.getCurrentActionBarHeight() / 2f * (1f + diff)
                 - dp(21)
+                + (openAnimationInProgress ? dp(1) : 0)
                 + actionBar.getTranslationY();
 
             if (!openAnimationInProgress) {
@@ -8795,9 +8796,9 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     expandAnimator.removeListener(resetListener);
                     expandAnimator.addListener(resetListener);
                 }
-                final float avatarBottom = (float) Math.floor(endNameY) + (openAnimationInProgress ? dp(4) : 0) + (avatarContainer.getHeight() * avatarContainer.getScaleY() + dpf2(8)) * (openAnimationInProgress ? avatarAnimationProgress : diff);
+                final float avatarBottom = (float) Math.floor(endNameY) + (openAnimationInProgress ? dp(4) * (1 - diff) : 0) + (avatarContainer.getHeight() * avatarContainer.getScaleY() + dpf2(8)) * (openAnimationInProgress ? avatarAnimationProgress : diff);
                 nameY = avatarBottom + AndroidUtilities.dp(1.3f) + AndroidUtilities.dp(7) * diff + titleAnimationsYDiff * (1f - avatarAnimationProgress);
-                onlineY = avatarBottom + AndroidUtilities.dp(24) - (openAnimationInProgress ? dp(1) : 0) + (float) Math.floor(11 * AndroidUtilities.density) * diff;
+                onlineY = avatarBottom + AndroidUtilities.dp(24) - (openAnimationInProgress ? dp(1) * (1 - diff) : 0) + (float) Math.floor(11 * AndroidUtilities.density) * diff;
                 final float minimizedX = openAnimationInProgress ? 0 : -dpf2(42 + 4);
 
                 if (showStatusButton != null) {

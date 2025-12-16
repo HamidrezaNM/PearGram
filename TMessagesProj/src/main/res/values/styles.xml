@@ -136,6 +136,11 @@
         <item name="android:windowExitAnimation">@anim/no_animation</item>
     </style>
 
+    <style name="DialogAnimationSlideUp">
+        <item name="android:windowEnterAnimation">@anim/slide_in</item>
+        <item name="android:windowExitAnimation">@anim/slide_out</item>
+    </style>
+
     <style name="TransparentDialog" parent="@android:style/Theme.Dialog">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:background">@null</item>
@@ -150,6 +155,18 @@
         <item name="android:listChoiceBackgroundIndicator">@drawable/list_selector_ex</item>
         <item name="android:actionBarItemBackground">@drawable/bar_selector_style</item>
         <item name="android:textViewStyle">@style/MyTextViewStyle</item>
+    </style>
+
+    <style name="TransparentDialogSlideUp" parent="@android:style/Theme.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowAnimationStyle">@style/DialogAnimationSlideUp</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowNoTitle">true</item>
     </style>
 
     <style name="TransparentDialogNoAnimation" parent="@android:style/Theme.Dialog">

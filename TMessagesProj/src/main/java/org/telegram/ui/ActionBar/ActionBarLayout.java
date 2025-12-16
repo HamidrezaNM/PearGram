@@ -796,6 +796,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
                 headerShadowDrawable.setAlpha(alpha);
             }
             Paint stroke = new Paint();
+            stroke.setAlpha(alpha);
             stroke.setColor(Theme.getColor(Theme.key_divider));
             canvas.drawRect(0, y, getMeasuredWidth(), y + dp(2.0f / AndroidUtilities.density), stroke);
 //            headerShadowDrawable.draw(canvas);

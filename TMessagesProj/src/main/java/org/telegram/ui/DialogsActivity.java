@@ -2874,6 +2874,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         Long emojiStatusId = UserObject.getEmojiStatusDocumentId(user);
         statusDrawableGiftId = null;
         if (emojiStatusId != null) {
+            actionBar.setTitle("Chats", statusDrawable);
             final boolean isCollectible = user.emoji_status instanceof TLRPC.TL_emojiStatusCollectible;
             statusDrawable.set(emojiStatusId, animated);
             statusDrawable.setParticles(isCollectible, animated);
@@ -3369,9 +3370,9 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 statusDrawable = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(null, dp(26));
                 statusDrawable.center = true;
                 if (BuildVars.DEBUG_VERSION) {
-                    actionBar.setTitle("Chats", statusDrawable);
+                    actionBar.setTitle("Chats");
                 } else {
-                    actionBar.setTitle("Chats", statusDrawable);
+                    actionBar.setTitle("Chats");
                 }
                 updateStatus(UserConfig.getInstance(currentAccount).getCurrentUser(), false);
             }
