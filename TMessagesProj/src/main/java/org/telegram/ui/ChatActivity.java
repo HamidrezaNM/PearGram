@@ -30892,6 +30892,7 @@ public class ChatActivity extends BaseFragment implements
                             cell.setSubtext(LocaleController.formatString(R.string.SuggestedOfferPaidUntil, LocaleController.formatDateTime(until, false)));
                             cell.setSubtextColor(getThemedColor(Theme.key_windowBackgroundWhiteGrayText6));
                         }
+                        cell.setColors(getThemedColor(Theme.key_text_RedRegular),getThemedColor(Theme.key_text_RedRegular));
                     }
                     scrimPopupWindowItems[a] = cell;
                     if (option == OPTION_REMOVE_ADS) {
@@ -31182,6 +31183,13 @@ public class ChatActivity extends BaseFragment implements
                 boolean showNoForwards = (getMessagesController().isChatNoForwards(currentChat) || message.messageOwner.noforwards && currentUser != null && currentUser.bot) && message.messageOwner.action == null && message.isSent() && !message.isEditing() && chatMode != MODE_SCHEDULED && chatMode != MODE_SAVED && getDialogId() != UserObject.VERIFY;
                 scrimPopupContainerLayout.addView(popupLayout, LayoutHelper.createLinearRelatively(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT, isReactionsAvailable ? 16 : 0, 0, isReactionsAvailable ? 36 : 0, 0));
                 scrimPopupContainerLayout.setPopupWindowLayout(popupLayout);
+                popupLayout.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+
+                if(isReactionsAvailable && reactionsLayout != null) {
+                    LinearLayout.LayoutParams reactionsParams = (LinearLayout.LayoutParams) reactionsLayout.getLayoutParams();
+                    reactionsParams.topMargin = (int) (Math.min(v.getHeight(), contentView.getHeight() - popupLayout.getMeasuredHeight() * 2 - dp(24) - chatListView.getY() - dp(50))) + dp(50);
+                }
+
                 if (showNoForwards) {
                     popupLayout.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
                     boolean isChannel = ChatObject.isChannel(currentChat) && !currentChat.megagroup;
@@ -31280,6 +31288,13 @@ public class ChatActivity extends BaseFragment implements
                             });
                             popupLayout.addView(button, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
                             popupLayout.precalculateHeight();
+
+                            if(isReactionsAvailable && reactionsLayout != null) {
+                                popupLayout.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+
+                                LinearLayout.LayoutParams reactionsParams = (LinearLayout.LayoutParams) reactionsLayout.getLayoutParams();
+                                reactionsParams.topMargin = (int) (Math.min(v.getHeight(), contentView.getHeight() - popupLayout.getMeasuredHeight() * 2 - dp(24) - chatListView.getY() - dp(50))) + dp(50);
+                            }
                         }
                     }
                 }
@@ -31369,6 +31384,7 @@ public class ChatActivity extends BaseFragment implements
             int minY = (int) (chatListView.getY() + dp(24));
             int maxY = totalHeight - height - dp(8);
             int deltaY = 0;
+            int additionalReactionsHeight = (reactionsLayout != null && isReactionsAvailable) ? (int) ((Math.min(v.getHeight(), contentView.getHeight() - popupLayout.getMeasuredHeight() * 2 - dp(24) - chatListView.getY() - dp(50))) + dp(50) * 2f) : 0;
 
             AnimatorSet animatorSet = new AnimatorSet();
             ArrayList<Animator> animators = new ArrayList<>();
@@ -31386,26 +31402,32 @@ public class ChatActivity extends BaseFragment implements
                 } else if (height - backgroundPaddings.top - backgroundPaddings.bottom > AndroidUtilities.dp(240)) {
                     popupY += AndroidUtilities.dp(240) - height;
                 }
-                popupY = v.getBottom() - dp(54);
+                popupY = v.getBottom() - dp(54) - additionalReactionsHeight;
                 if(popupY > maxY) {
                     deltaY = popupY - maxY;
+                    animators.add(ObjectAnimator.ofFloat(v, View.TRANSLATION_Y, 0f, -deltaY));
+                } else if (popupY < minY + dp(50)) {
+                    deltaY = popupY - minY - dp(50) - dp(8);
                     animators.add(ObjectAnimator.ofFloat(v, View.TRANSLATION_Y, 0f, -deltaY));
                 }
                 popupY = Utilities.clamp(popupY, maxY, minY);
             } else {
                 popupY = inBubbleMode ? 0 : AndroidUtilities.statusBarHeight;
+//                LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) reactionsLayout.getLayoutParams();
+//
+//                params.topMargin = (int) ((totalHeight - height) / AndroidUtilities.density + params.topMargin);
             }
             final int finalPopupX = scrimPopupX = popupX;
             final int finalPopupY = scrimPopupY = popupY;
             scrimPopupContainerLayout.setMaxHeight(maxY + height - popupY);
 
-            View salamScrimView = scrimPopupWindow.getContentView();
+            View finalScrimView = scrimPopupWindow.getContentView();
 
-            salamScrimView.setPivotX(salamScrimView.getMeasuredWidth() / 2);
-            salamScrimView.setPivotY(deltaY);
+            finalScrimView.setPivotX(finalScrimView.getMeasuredWidth() / 2);
+            finalScrimView.setPivotY(deltaY + additionalReactionsHeight);
 
-            animators.add(ObjectAnimator.ofFloat(salamScrimView, View.SCALE_X, 0f, 1f));
-            animators.add(ObjectAnimator.ofFloat(salamScrimView, View.SCALE_Y, 0f, 1f));
+            animators.add(ObjectAnimator.ofFloat(finalScrimView, View.SCALE_X, 0f, 1f));
+            animators.add(ObjectAnimator.ofFloat(finalScrimView, View.SCALE_Y, 0f, 1f));
 
             animatorSet.playTogether(animators);
             animatorSet.setDuration(500);
@@ -31413,6 +31435,9 @@ public class ChatActivity extends BaseFragment implements
             animatorSet.start();
 
             ReactionsContainerLayout finalReactionsLayout = reactionsLayout;
+
+            finalReactionsLayout.setTranslationY(-(additionalReactionsHeight - dp(100)));
+
             Runnable showMenu = () -> {
                 if (scrimPopupWindow == null || fragmentView == null || scrimPopupWindow.isShowing() || !AndroidUtilities.isActivityRunning(getParentActivity())) {
                     return;
