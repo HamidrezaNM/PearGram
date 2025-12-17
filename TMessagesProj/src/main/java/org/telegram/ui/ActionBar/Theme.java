@@ -6268,6 +6268,47 @@ public class Theme {
         }
     }
 
+    public static class BottomLineDrawable extends Drawable {
+
+        private final Paint paint;
+        private final float lineHeight;
+
+        public BottomLineDrawable(int lineColor, float dpHeight) {
+            paint = new Paint();
+            paint.setColor(lineColor);
+            paint.setStyle(Paint.Style.FILL);
+            paint.setStrokeWidth(1);
+
+            this.lineHeight = dpHeight;
+        }
+
+        @Override
+        public void draw(@NonNull Canvas canvas) {
+            int width = getBounds().width();
+            int height = getBounds().height();
+            final float finalLineHeight = lineHeight;
+
+            canvas.drawRect(0, height - finalLineHeight, width, height, paint);
+        }
+
+        @Override
+        public void setAlpha(int alpha) {
+            paint.setAlpha(alpha);
+            invalidateSelf();
+        }
+
+        @Override
+        public void setColorFilter(@Nullable ColorFilter colorFilter) {
+            paint.setColorFilter(colorFilter);
+            invalidateSelf();
+        }
+
+        @Override
+        public int getOpacity() {
+            return PixelFormat.TRANSPARENT;
+        }
+    }
+
     public static void setMaskDrawableRad(Drawable rippleDrawable, int top, int bottom) {
         if (rippleDrawable instanceof RippleDrawable) {
             RippleDrawable drawable = (RippleDrawable) rippleDrawable;
@@ -6304,6 +6345,16 @@ public class Theme {
                 new int[]{color}
         );
         return new BaseCell.RippleDrawableSafe(colorStateList, null, maskDrawable);
+    }
+
+    public static Drawable createRadSelectorWithBackgroundDrawable(int color, Drawable background, int topRad, int bottomRad) {
+        maskPaint.setColor(0xffffffff);
+        Drawable maskDrawable = new RippleRadMaskDrawable(topRad, bottomRad);
+        ColorStateList colorStateList = new ColorStateList(
+                new int[][]{StateSet.WILD_CARD},
+                new int[]{color}
+        );
+        return new BaseCell.RippleDrawableSafe(colorStateList, background, maskDrawable);
     }
 
     public static Drawable createRadSelectorDrawable(int color, int rippleColor, int topRad, int bottomRad) {

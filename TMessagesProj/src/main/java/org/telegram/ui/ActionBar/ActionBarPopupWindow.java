@@ -31,6 +31,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.animation.DecelerateInterpolator;
+import android.view.animation.PathInterpolator;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -67,6 +68,7 @@ public class ActionBarPopupWindow extends PopupWindow {
     private boolean pauseNotifications;
     private long outEmptyTime = -1;
     private boolean scaleOut;
+    private boolean fullScaleOut;
 
     static {
         Field f = null;
@@ -89,6 +91,9 @@ public class ActionBarPopupWindow extends PopupWindow {
 
     public void setScaleOut(boolean b) {
         scaleOut = b;
+    }
+    public void setFullScaleOut(boolean b) {
+        fullScaleOut = b;
     }
 
     public interface OnDispatchKeyEventListener {
@@ -1055,6 +1060,13 @@ public class ActionBarPopupWindow extends PopupWindow {
                         ObjectAnimator.ofFloat(viewGroup, View.SCALE_X, 0.8f),
                         ObjectAnimator.ofFloat(viewGroup, View.ALPHA, 0.0f));
                 windowAnimatorSet.setDuration(dismissAnimationDuration);
+            } else if (fullScaleOut) {
+                windowAnimatorSet.playTogether(
+                        ObjectAnimator.ofFloat(viewGroup, View.SCALE_Y, 0.0f),
+                        ObjectAnimator.ofFloat(viewGroup, View.SCALE_X, 0.0f),
+                        ObjectAnimator.ofFloat(viewGroup, View.ALPHA, 0.0f));
+                windowAnimatorSet.setDuration(dismissAnimationDuration);
+                windowAnimatorSet.setInterpolator(new PathInterpolator(0.19f, 1.0f, 0.22f, 1.0f));
             } else {
                 windowAnimatorSet.playTogether(
                         ObjectAnimator.ofFloat(viewGroup, View.TRANSLATION_Y, AndroidUtilities.dp((content != null && content.shownFromBottom) ? 5 : -5)),

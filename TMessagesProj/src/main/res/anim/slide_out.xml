@@ -4,5 +4,5 @@
         android:duration="250"
         android:fromYDelta="0%"
         android:toYDelta="100%"
-        android:interpolator="@anim/exponential_ease_out"/>
+        android:interpolator="@interpolator/exponential_ease_out"/>
 </set>

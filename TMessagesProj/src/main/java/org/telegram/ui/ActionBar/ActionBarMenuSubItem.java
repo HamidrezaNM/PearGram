@@ -213,7 +213,7 @@ public class ActionBarMenuSubItem extends FrameLayout {
             }
             imageView.setVisibility(VISIBLE);
             textView.setPadding(checkViewLeft ? (checkView != null ? dp(43) : 0) : dp(icon != 0 || iconDrawable != null ? 43 : 0), 0, checkViewLeft ? dp(icon != 0 || iconDrawable != null ? 43 : 0) : (checkView != null ? dp(43) : 0), 0);
-            textView.setPadding(0,0,0,0);
+            textView.setPadding(0,0,dp(43),0);
         } else {
             iconResId = 0;
             imageView.setVisibility(INVISIBLE);
@@ -224,7 +224,7 @@ public class ActionBarMenuSubItem extends FrameLayout {
     public void setTextAndIcon(CharSequence text, ImageLocation imageLocation, String imageFilter, Drawable thumb, Object parentObject) {
         textView.setText(text);
         textView.setPadding(checkViewLeft ? (checkView != null ? dp(43) : 0) : dp(43), 0, checkViewLeft ? dp(43) : (checkView != null ? dp(43) : 0), 0);
-        textView.setPadding(0,0,0,0);
+        textView.setPadding(0,0,dp(43),0);
         if (backupImageView == null) {
             backupImageView = new BackupImageView(getContext());
             backupImageView.setRoundRadius(dp(5));
@@ -394,7 +394,8 @@ public class ActionBarMenuSubItem extends FrameLayout {
     }
 
     public void updateBackground() {
-        setBackground(Theme.createRadSelectorDrawable(selectorColor, top ? selectorRad : 0, bottom ? selectorRad : 0));
+        Theme.BottomLineDrawable bottomLineDrawable = new Theme.BottomLineDrawable(getThemedColor(Theme.key_divider), dp(.33f));
+        setBackground(Theme.createRadSelectorWithBackgroundDrawable(selectorColor,!bottom ? bottomLineDrawable : null, top ? selectorRad : 0, bottom ? selectorRad : 0));
     }
 
     private int getThemedColor(int key) {

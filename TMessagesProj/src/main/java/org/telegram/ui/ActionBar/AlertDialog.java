@@ -315,7 +315,7 @@ public class AlertDialog extends Dialog implements Drawable.Callback, Notificati
     }
 
     public AlertDialog(Context context, int progressStyle, Theme.ResourcesProvider resourcesProvider) {
-        super(context, R.style.TransparentDialog);
+        super(context, R.style.TransparentDialogPopUp);
         this.resourcesProvider = resourcesProvider;
 
         progressViewStyle = progressStyle;
