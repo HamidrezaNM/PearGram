@@ -51,6 +51,7 @@ public class BackDrawable extends Drawable {
     private int unreadCount;
     private int unreadAlpha = 255;
     private float cancelAlpha;
+    private String cancelText = "Cancel";
     private float finalCancelAlpha;
 
     public float getRotation() {
@@ -84,6 +85,17 @@ public class BackDrawable extends Drawable {
 
     public void setFloating(float value) {
         floating = value;
+        invalidateSelf();
+    }
+
+    public void setCancelButton(boolean show) {
+        setCancelButton(show, "Cancel");
+    }
+
+    public void setCancelButton(boolean show, String text) {
+        cancelAlpha = show ? 1 : 0;
+        finalCancelAlpha = show ? 1 : 0;
+        cancelText = text;
         invalidateSelf();
     }
 
@@ -228,7 +240,7 @@ public class BackDrawable extends Drawable {
         }
 
         if (cancelAlpha != 0) {
-            canvas.drawText("Cancel", dp(10f), dp(0f) - (paint.getFontMetrics().ascent + paint.getFontMetrics().descent) / 2f, cancelPaint);
+            canvas.drawText(cancelText, dp(0f), dp(0f) - (paint.getFontMetrics().ascent + paint.getFontMetrics().descent) / 2f, cancelPaint);
         }
 
         canvas.restore();

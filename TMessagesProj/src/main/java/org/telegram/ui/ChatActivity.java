@@ -11932,7 +11932,7 @@ public class ChatActivity extends BaseFragment implements
         args.putBoolean("canSelectTopics", true);
         DialogsActivity fragment = new DialogsActivity(args);
         fragment.setDelegate(ChatActivity.this);
-        presentFragment(fragment);
+        presentFragmentAsModal(fragment);
     }
 
     public void showBottomOverlayProgress(boolean show, boolean animated) {
@@ -31293,7 +31293,7 @@ public class ChatActivity extends BaseFragment implements
                                 popupLayout.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
 
                                 LinearLayout.LayoutParams reactionsParams = (LinearLayout.LayoutParams) reactionsLayout.getLayoutParams();
-                                reactionsParams.topMargin = (int) (Math.min(v.getHeight(), contentView.getHeight() - popupLayout.getMeasuredHeight() * 2 - dp(24) - chatListView.getY() - dp(50))) + dp(50);
+                                reactionsParams.topMargin = (int) (Math.min(v.getHeight(), contentView.getHeight() - popupLayout.getMeasuredHeight() * 2 - dp(24) - chatListView.getY() - dp(124))) + dp(50);
                             }
                         }
                     }
@@ -32368,7 +32368,7 @@ public class ChatActivity extends BaseFragment implements
                 args.putBoolean("canSelectTopics", true);
                 DialogsActivity fragment = new DialogsActivity(args);
                 fragment.setDelegate(this);
-                presentFragment(fragment);
+                presentFragmentAsModal(fragment);
                 break;
             }
             case OPTION_COPY: {

@@ -3062,7 +3062,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         actionBar.setItemsBackgroundColor(Theme.getColor(Theme.key_actionBarActionModeDefaultSelector), true);
         actionBar.setItemsColor(Theme.getColor(Theme.key_actionBarDefaultIcon), false);
         actionBar.setItemsColor(Theme.getColor(Theme.key_actionBarActionModeDefaultIcon), true);
-        if (inPreviewMode || AndroidUtilities.isTablet() && folderId != 0 && !isArchive()) {
+        if (inPreviewMode || inModalMode || AndroidUtilities.isTablet() && folderId != 0 && !isArchive()) {
             actionBar.setOccupyStatusBar(false);
         }
         return actionBar;
@@ -3766,7 +3766,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                     getNotificationsController().showNotifications();
                     updatePasscodeButton();
                 } else if (id == 2) {
-                    presentFragment(new ProxyListActivity());
+                    presentFragmentAsModal(new ProxyListActivity());
                 } else if (id == 3) {
                     showSearch(true, true, true);
                     actionBar.openSearchField(true);

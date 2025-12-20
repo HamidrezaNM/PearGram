@@ -73,6 +73,7 @@ public abstract class BaseFragment {
     protected INavigationLayout parentLayout;
     protected ActionBar actionBar;
     protected boolean inPreviewMode;
+    protected boolean inModalMode;
     protected boolean inMenuMode;
     protected boolean inBubbleMode;
     protected int classGuid;
@@ -264,6 +265,9 @@ public abstract class BaseFragment {
     public boolean isInPreviewMode() {
         return inPreviewMode;
     }
+    public boolean isInModalMode() {
+        return inModalMode;
+    }
 
     public boolean getInPassivePreviewMode() {
         return parentLayout != null && parentLayout.isInPassivePreviewMode();
@@ -281,6 +285,13 @@ public abstract class BaseFragment {
         inPreviewMode = value;
         if (actionBar != null) {
             actionBar.setOccupyStatusBar(!inPreviewMode);
+        }
+    }
+
+    public void setInModalMode(boolean value) {
+        inModalMode = value;
+        if (actionBar != null) {
+            actionBar.setOccupyStatusBar(!inModalMode);
         }
     }
 
@@ -385,7 +396,7 @@ public abstract class BaseFragment {
         actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarActionModeDefaultSelector), true);
         actionBar.setItemsColor(getThemedColor(Theme.key_actionBarDefaultIcon), false);
         actionBar.setItemsColor(getThemedColor(Theme.key_actionBarActionModeDefaultIcon), true);
-        if (inPreviewMode || inBubbleMode) {
+        if (inPreviewMode || inBubbleMode || inModalMode) {
             actionBar.setOccupyStatusBar(false);
         }
         return actionBar;

@@ -245,6 +245,8 @@ public class ActionBar extends FrameLayout {
             backDrawable.setRotatedColor(itemsActionModeColor);
             backDrawable.setColor(itemsColor);
             backDrawable.setUnreadCount(unreadCount);
+            if(parentFragment != null)
+                backDrawable.setCancelButton(parentFragment.inModalMode);
             backDrawableButton = backDrawable;
         } else if (drawable instanceof MenuDrawable) {
             MenuDrawable menuDrawable = (MenuDrawable) drawable;

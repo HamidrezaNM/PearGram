@@ -68,6 +68,7 @@ import org.telegram.messenger.SharedConfig;
 import org.telegram.messenger.Utilities;
 import org.telegram.ui.Components.AnimatedFloat;
 import org.telegram.ui.Components.BackButtonMenu;
+import org.telegram.ui.DialogsActivity;
 import org.telegram.ui.EmptyBaseFragment;
 import org.telegram.ui.ProfileActivity;
 import org.telegram.ui.bots.BotWebViewSheet;
@@ -84,6 +85,7 @@ import org.telegram.ui.Stories.StoryViewer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class ActionBarLayout extends FrameLayout implements INavigationLayout, FloatingDebugProvider {
 
@@ -431,6 +433,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
 
     private boolean inBubbleMode;
 
+    private boolean inModalMode;
     private boolean inPreviewMode;
     private boolean previewOpenAnimationInProgress;
     private ColorDrawable previewBackgroundDrawable;
@@ -918,8 +921,8 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
     @Override
     protected boolean drawChild(Canvas canvas, View child, long drawingTime) {
         if (drawerLayoutContainer != null && drawerLayoutContainer.isDrawCurrentPreviewFragmentAbove()) {
-            if (inPreviewMode || transitionAnimationPreviewMode || previewOpenAnimationInProgress) {
-                if (child == (oldFragment != null && oldFragment.inPreviewMode ? containerViewBack : containerView)) {
+            if (inPreviewMode || transitionAnimationPreviewMode || previewOpenAnimationInProgress || inModalMode) {
+                if (child == (oldFragment != null && oldFragment.inPreviewMode || Objects.requireNonNull(oldFragment).inModalMode ? containerViewBack : containerView)) {
                     drawerLayoutContainer.invalidate();
                     return false;
                 }
@@ -968,10 +971,27 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
                     clipRight += Math.max(topLeft == null ? 0 : topLeft.getRadius(), bottomLeft == null ? 0 : bottomLeft.getRadius());
                 }
             }
+        } else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !isSheet && inModalMode) {
+            final WindowInsets insets = getRootWindowInsets();
+            if (insets != null) {
+                final RoundedCorner topLeft = insets.getRoundedCorner(android.view.RoundedCorner.POSITION_TOP_LEFT);
+                final RoundedCorner topRight = insets.getRoundedCorner(android.view.RoundedCorner.POSITION_TOP_RIGHT);
+                final RoundedCorner bottomRight = insets.getRoundedCorner(android.view.RoundedCorner.POSITION_BOTTOM_RIGHT);
+                final RoundedCorner bottomLeft = insets.getRoundedCorner(RoundedCorner.POSITION_BOTTOM_LEFT);
+                radii[0] = radii[1] = topLeft == null ? 0 : topLeft.getRadius();
+                radii[2] = radii[3] = topRight == null ? 0 : topRight.getRadius();
+                radii[4] = radii[5] = bottomRight == null ? 0 : bottomRight.getRadius();
+                radii[6] = radii[7] = bottomLeft == null ? 0 : bottomLeft.getRadius();
+
+                clipPath.rewind();
+                AndroidUtilities.rectTmp.set(0, 0, child.getWidth(), getHeight());
+                clipPath.addRoundRect(AndroidUtilities.rectTmp, radii, Path.Direction.CW);
+                canvas.clipPath(clipPath);
+            }
         }
 
         final int restoreCount = canvas.save();
-        if (!isTransitionAnimationInProgress() && !inPreviewMode) {
+        if (!isTransitionAnimationInProgress() && !inPreviewMode && !inModalMode) {
             canvas.clipRect(clipLeft, 0, clipRight, getHeight());
         }
         if ((inPreviewMode || transitionAnimationPreviewMode) && child == containerView) {
@@ -1157,6 +1177,18 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
             fragmentsStack.remove(fragmentsStack.size() - 1);
             onFragmentStackChanged("onSlideAnimationEnd");
 
+            if(inModalMode) {
+                containerView.setTranslationY(0);
+                containerViewBack.setTranslationY(0);
+                containerViewBack.setScaleX(1);
+                containerViewBack.setScaleY(1);
+
+                FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) containerView.getLayoutParams();
+                lp.topMargin = 0;
+
+                inModalMode = false;
+            }
+
             LayoutContainer temp = containerView;
             containerView = containerViewBack;
             containerViewBack = temp;
@@ -1172,7 +1204,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
             lastFragment.prepareFragmentToSlide(false, false);
 
             layoutToIgnore = containerView;
-        } else {
+        } else if (!inModalMode) {
             if (fragmentsStack.size() >= 2) {
                 BaseFragment lastFragment = fragmentsStack.get(fragmentsStack.size() - 1);
                 lastFragment.prepareFragmentToSlide(true, false);
@@ -1197,7 +1229,9 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
             }
             layoutToIgnore = null;
         }
-        containerViewBack.setVisibility(View.INVISIBLE);
+        if (!inModalMode) {
+            containerViewBack.setVisibility(View.INVISIBLE);
+        }
         startedTracking = false;
         animationInProgress = false;
         containerView.setTranslationX(0);
@@ -1275,9 +1309,9 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
                         velocityTracker = VelocityTracker.obtain();
                     }
                     int dx = Math.max(0, (int) (ev.getX() - startedTrackingX));
-                    int dy = Math.abs((int) ev.getY() - startedTrackingY);
+                    int dy = (int) ev.getY() - startedTrackingY;
                     velocityTracker.addMovement(ev);
-                    if (!transitionAnimationInProgress && !inPreviewMode && maybeStartTracking && !startedTracking && dx >= AndroidUtilities.getPixelsInCM(0.4f, true) && Math.abs(dx) / 3 > dy) {
+                    if (!transitionAnimationInProgress && !inPreviewMode && maybeStartTracking && !startedTracking && (inModalMode ? dy >= AndroidUtilities.getPixelsInCM(0.1f, false) && Math.abs(dy) / 3 > dx : dx >= AndroidUtilities.getPixelsInCM(0.4f, true) && Math.abs(dx) / 3 > dy)) {
                         BaseFragment currentFragment = fragmentsStack.get(fragmentsStack.size() - 1);
                         if (currentFragment.canBeginSlide() && findScrollingChild(this, ev.getX(), ev.getY()) == null) {
                             prepareForMoving(ev);
@@ -1289,12 +1323,24 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
                             if (parentActivity.getCurrentFocus() != null) {
                                 AndroidUtilities.hideKeyboard(parentActivity.getCurrentFocus());
                             }
-                            BaseFragment currentFragment = fragmentsStack.get(fragmentsStack.size() - 1);
-                            currentFragment.onBeginSlide();
+                            if(!inModalMode) {
+                                BaseFragment currentFragment = fragmentsStack.get(fragmentsStack.size() - 1);
+                                currentFragment.onBeginSlide();
+                            }
                             beginTrackingSent = true;
                         }
-                        containerView.setTranslationX(dx);
-                        setInnerTranslationX(dx);
+                        if(inModalMode) {
+                            dy -= (int) AndroidUtilities.getPixelsInCM(0.1f, false);
+                            if(dy > 0) {
+                                containerView.setTranslationY(dy);
+                                containerViewBack.setTranslationY(-dp(4) * (1.0f - (float) dy / containerView.getMeasuredHeight()));
+                                containerViewBack.setScaleX(.9f + ((float) dy / containerViewBack.getMeasuredHeight()) * .1f);
+                                containerViewBack.setScaleY(.9f + ((float) dy / containerViewBack.getMeasuredHeight()) * .1f);
+                            }
+                        } else {
+                            containerView.setTranslationX(dx);
+                            setInnerTranslationX(dx);
+                        }
                     }
                 } else if (ev != null && ev.getPointerId(0) == startedTrackingPointerId && (ev.getAction() == MotionEvent.ACTION_CANCEL || ev.getAction() == MotionEvent.ACTION_UP || ev.getAction() == MotionEvent.ACTION_POINTER_UP)) {
                     if (velocityTracker == null) {
@@ -1317,31 +1363,58 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
                     }
                     if (startedTracking) {
                         float x = containerView.getX();
+                        float y = containerView.getY();
                         AnimatorSet animatorSet = new AnimatorSet();
                         float velX = velocityTracker.getXVelocity();
                         float velY = velocityTracker.getYVelocity();
-                        final boolean backAnimation = x < containerView.getMeasuredWidth() / 3.0f && (velX < 3500 || velX < velY);
+                        final boolean backAnimation = inModalMode ? y < containerView.getMeasuredHeight() / 3.0f && (velY < 3500 || velY < velX) : x < containerView.getMeasuredWidth() / 3.0f && (velX < 3500 || velX < velY);
                         float distToMove;
                         boolean overrideTransition = currentFragment.shouldOverrideSlideTransition(false, backAnimation);
 
                         if (!backAnimation) {
-                            distToMove = containerView.getMeasuredWidth() - x;
-                            int duration = Math.max((int) (200.0f / containerView.getMeasuredWidth() * distToMove), 50);
-                            if (!overrideTransition) {
-                                animatorSet.playTogether(
-                                        ObjectAnimator.ofFloat(containerView, View.TRANSLATION_X, containerView.getMeasuredWidth()).setDuration(duration),
-                                        ObjectAnimator.ofFloat(this, "innerTranslationX", (float) containerView.getMeasuredWidth()).setDuration(duration)
-                                );
+                            if (inModalMode) {
+                                distToMove = containerView.getMeasuredHeight() - y;
+                                int duration = Math.max((int) (200.0f / containerView.getMeasuredHeight() * distToMove), 50);
+                                if (!overrideTransition) {
+                                    animatorSet.playTogether(
+                                            ObjectAnimator.ofFloat(containerView, View.TRANSLATION_Y, containerView.getMeasuredHeight()).setDuration(duration),
+                                            ObjectAnimator.ofFloat(containerViewBack, View.TRANSLATION_Y, 0f).setDuration(duration),
+                                            ObjectAnimator.ofFloat(containerViewBack, View.SCALE_X, 1f).setDuration(duration),
+                                            ObjectAnimator.ofFloat(containerViewBack, View.SCALE_Y, 1f).setDuration(duration)
+                                    );
+                                }
+                            } else {
+                                distToMove = containerView.getMeasuredWidth() - x;
+                                int duration = Math.max((int) (200.0f / containerView.getMeasuredWidth() * distToMove), 50);
+                                if (!overrideTransition) {
+                                    animatorSet.playTogether(
+                                            ObjectAnimator.ofFloat(containerView, View.TRANSLATION_X, containerView.getMeasuredWidth()).setDuration(duration),
+                                            ObjectAnimator.ofFloat(this, "innerTranslationX", (float) containerView.getMeasuredWidth()).setDuration(duration)
+                                    );
+                                }
                             }
                         } else {
-                            distToMove = x;
-                            int duration = Math.max((int) (320.0f / containerView.getMeasuredWidth() * distToMove), 120);
-                            if (!overrideTransition) {
-                                animatorSet.playTogether(
-                                        ObjectAnimator.ofFloat(containerView, View.TRANSLATION_X, 0).setDuration(duration),
-                                        ObjectAnimator.ofFloat(this, "innerTranslationX", 0.0f).setDuration(duration)
-                                );
-                                animatorSet.setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT);
+                            if (inModalMode) {
+                                distToMove = containerView.getMeasuredHeight() - y;
+                                int duration = Math.max((int) (320.0f / containerView.getMeasuredHeight() * distToMove), 50);
+                                if (!overrideTransition) {
+                                    animatorSet.playTogether(
+                                            ObjectAnimator.ofFloat(containerView, View.TRANSLATION_Y, 0f).setDuration(duration),
+                                            ObjectAnimator.ofFloat(containerViewBack, View.TRANSLATION_Y, -dp(4f)).setDuration(duration),
+                                            ObjectAnimator.ofFloat(containerViewBack, View.SCALE_X, (float) .9f).setDuration(duration),
+                                            ObjectAnimator.ofFloat(containerViewBack, View.SCALE_Y, (float) .9f).setDuration(duration)
+                                    );
+                                }
+                            } else {
+                                distToMove = x;
+                                int duration = Math.max((int) (320.0f / containerView.getMeasuredWidth() * distToMove), 120);
+                                if (!overrideTransition) {
+                                    animatorSet.playTogether(
+                                            ObjectAnimator.ofFloat(containerView, View.TRANSLATION_X, 0).setDuration(duration),
+                                            ObjectAnimator.ofFloat(this, "innerTranslationX", 0.0f).setDuration(duration)
+                                    );
+                                    animatorSet.setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT);
+                                }
                             }
                         }
 
@@ -1438,6 +1511,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
             AndroidUtilities.cancelRunOnUIThread(animationRunnable);
             animationRunnable = null;
         }
+
         setAlpha(1.0f);
         containerView.setAlpha(1.0f);
         containerView.setScaleX(1.0f);
@@ -1446,6 +1520,13 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
         containerViewBack.setScaleX(1.0f);
         containerViewBack.setScaleY(1.0f);
         containerViewBack.setTranslationX(0);
+        containerViewBack.setTranslationY(0);
+
+        if(inModalMode) {
+            containerViewBack.setTranslationY(-dp(4));
+            containerViewBack.setScaleX(.9f);
+            containerViewBack.setScaleY(.9f);
+        }
     }
 
     public BaseFragment getLastFragment() {
@@ -1611,8 +1692,8 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
 
                         containerView.setTranslationX(0);
                         containerViewBack.setTranslationX(0);
-                        containerView.setTranslationY(containerView.getMeasuredHeight() * (1.0f - interpolated) + dp(24) + AndroidUtilities.statusBarHeight);
-                        containerViewBack.setTranslationY(dp(12) * (-interpolated));
+                        containerView.setTranslationY(containerView.getMeasuredHeight() * (1.0f - interpolated));
+                        containerViewBack.setTranslationY(dp(4) * (-interpolated));
                         containerViewBack.setScaleX(.9f + (0.1f * (1.0f - interpolated)));
                         containerViewBack.setScaleY(.9f + (0.1f * (1.0f - interpolated)));
                     } else {
@@ -1635,6 +1716,16 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
                         }
                         containerView.invalidate();
                         invalidate();
+                    } else if (modal) {
+                        containerViewBack.setAlpha(1f);
+    //                        containerViewBack.setAlpha(1.0f - clampedInterpolated * .5f);
+
+                        containerViewBack.setTranslationX(0);
+                        containerView.setTranslationX(0);
+                        containerViewBack.setTranslationY(containerView.getMeasuredHeight() * interpolated);
+                        containerView.setTranslationY(-dp(4) * (1.0f -interpolated));
+                        containerView.setScaleX(.9f + (0.1f * interpolated));
+                        containerView.setScaleY(.9f + (0.1f * interpolated));
                     } else {
                         containerViewBack.setAlpha(1f);
                         containerView.setAlpha(0.5f + (1.0f - clampedReverseInterpolated) * .5f);
@@ -1647,6 +1738,19 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
                     startLayoutAnimation(open, false, preview, modal);
                 } else {
                     onAnimationEndCheck(false);
+
+                    if(!open && modal) {
+                        containerViewBack.setTranslationY(0);
+                        containerView.setTranslationY(0);
+                        containerView.setScaleX(1);
+                        containerView.setScaleY(1);
+
+                        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) containerView.getLayoutParams();
+                        lp.topMargin = 0;
+
+                        FrameLayout.LayoutParams lp2 = (FrameLayout.LayoutParams) containerViewBack.getLayoutParams();
+                        lp2.topMargin = 0;
+                    }
                 }
             }
         });
@@ -1718,6 +1822,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
             closeLastFragment(false, true);
         }
         fragment.setInPreviewMode(preview);
+        fragment.setInModalMode(modal);
         if (previewMenu != null) {
             if (previewMenu.getParent() != null) {
                 ((ViewGroup) previewMenu.getParent()).removeView(previewMenu);
@@ -1810,6 +1915,12 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
         setInnerTranslationX(0);
         containerView.setTranslationY(0);
 
+        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) containerView.getLayoutParams();
+        lp.topMargin = modal ? dp(50) : 0;
+
+        FrameLayout.LayoutParams lp2 = (FrameLayout.LayoutParams) containerViewBack.getLayoutParams();
+        lp2.topMargin = 0;
+
         if (preview) {
             fragmentView.setOutlineProvider(new ViewOutlineProvider() {
                 @Override
@@ -1828,6 +1939,54 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
             Theme.moveUpDrawable.setAlpha(0);
         }
 
+        if(modal) {
+            int radius = dp(16);
+
+            fragment.actionBar.setOutlineProvider(new ViewOutlineProvider() {
+                @Override
+                public void getOutline(View view, Outline outline) {
+                    outline.setRoundRect(0,
+                            0,
+                            view.getMeasuredWidth(), view.getMeasuredHeight() + radius, radius);
+                }
+            });
+            fragment.actionBar.setClipToOutline(true);
+//            fragment.actionBar.getBackDrawable().setCancelButton(true);
+            if(lastFragment != null) {
+                lastFragment.actionBar.setOutlineProvider(new ViewOutlineProvider() {
+                    @Override
+                    public void getOutline(View view, Outline outline) {
+                        outline.setRoundRect(0,
+                                0,
+                                view.getMeasuredWidth(), view.getMeasuredHeight() + radius, radius);
+                    }
+                });
+                lastFragment.actionBar.setClipToOutline(true);
+
+                if (fragment instanceof DialogsActivity) {
+                    fragmentView.setOutlineProvider(new ViewOutlineProvider() {
+                        @Override
+                        public void getOutline(View view, Outline outline) {
+                            outline.setRoundRect(0,
+                                    0,
+                                    view.getMeasuredWidth(), view.getMeasuredHeight() + radius, radius);
+                        }
+                    });
+                    fragmentView.setClipToOutline(true);
+                } else if (lastFragment instanceof DialogsActivity) {
+                    lastFragment.fragmentView.setOutlineProvider(new ViewOutlineProvider() {
+                        @Override
+                        public void getOutline(View view, Outline outline) {
+                            outline.setRoundRect(0,
+                                    0,
+                                    view.getMeasuredWidth(), view.getMeasuredHeight() + radius, radius);
+                        }
+                    });
+                    lastFragment.fragmentView.setClipToOutline(true);
+                }
+            }
+        }
+
         bringChildToFront(containerView);
         if (sheetContainer != null) {
             bringChildToFront(sheetContainer);
@@ -1842,6 +2001,8 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
         if (themeAnimatorSet != null) {
             presentingFragmentDescriptions = fragment.getThemeDescriptions();
         }
+
+        inModalMode = modal;
 
         if (needAnimation || preview) {
             if (useAlphaAnimations && fragmentsStack.size() == 1) {
@@ -2258,6 +2419,19 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
             previousFragment = fragmentsStack.get(fragmentsStack.size() - 2);
         }
 
+        if(inModalMode && !needAnimation) {
+            containerView.setTranslationY(0);
+            containerViewBack.setTranslationY(0);
+            containerViewBack.setScaleX(1);
+            containerViewBack.setScaleY(1);
+
+            FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) containerView.getLayoutParams();
+            lp.topMargin = 0;
+
+            FrameLayout.LayoutParams lp2 = (FrameLayout.LayoutParams) containerViewBack.getLayoutParams();
+            lp2.topMargin = 0;
+        }
+
         if (previousFragment != null) {
             AndroidUtilities.setLightStatusBar(parentActivity.getWindow(), Theme.getColor(Theme.key_actionBarDefault) == Color.WHITE || (previousFragment.hasForceLightStatusBar() && !Theme.getCurrentTheme().isDark()), previousFragment.hasForceLightStatusBar());
             LayoutContainer temp = containerView;
@@ -2335,6 +2509,11 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
                         inPreviewMode = false;
                         previewMenu = null;
                         transitionAnimationPreviewMode = false;
+                    } else if (inModalMode) {
+                        containerViewBack.setScaleX(1.0f);
+                        containerViewBack.setScaleY(1.0f);
+                        containerViewBack.setTranslationY(0);
+//                        containerViewBack.setLayerType(View.LAYER_TYPE_NONE, null);
                     } else {
                         containerViewBack.setTranslationX(0);
                     }
@@ -2345,7 +2524,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
                     previousFragmentFinal.onBecomeFullyVisible();
                 };
                 AnimatorSet animation = null;
-                if (!inPreviewMode && !transitionAnimationPreviewMode) {
+                if (!inPreviewMode && !transitionAnimationPreviewMode && !inModalMode) {
                     animation = currentFragment.onCustomTransitionAnimation(false, () -> onAnimationEndCheck(false));
                 }
                 if (animation == null) {
@@ -2357,12 +2536,12 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
                                     return;
                                 }
                                 waitingForKeyboardCloseRunnable = null;
-                                startLayoutAnimation(false, true, false, false);
+                                startLayoutAnimation(false, true, false, inModalMode);
                             }
                         };
                         AndroidUtilities.runOnUIThread(waitingForKeyboardCloseRunnable, 200);
                     } else {
-                        startLayoutAnimation(false, true, inPreviewMode || transitionAnimationPreviewMode, false);
+                        startLayoutAnimation(false, true, inPreviewMode || transitionAnimationPreviewMode, inModalMode);
                     }
                 } else {
                     currentAnimation = animation;
@@ -2424,6 +2603,10 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
                 }
             }
         }
+
+        if(inModalMode)
+            inModalMode = false;
+
         currentFragment.onFragmentClosed();
     }
 

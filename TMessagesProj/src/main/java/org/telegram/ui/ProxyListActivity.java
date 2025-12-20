@@ -360,6 +360,7 @@ public class ProxyListActivity extends BaseFragment implements NotificationCente
         actionBar.setBackButtonDrawable(new BackDrawable(false));
         actionBar.setAllowOverlayTitle(true);
         actionBar.setTitle(LocaleController.getString(R.string.ProxySettings));
+        actionBar.getBackDrawable().setCancelButton(true, "Close");
         actionBar.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundGray));
         if (AndroidUtilities.isTablet()) {
             actionBar.setOccupyStatusBar(false);
@@ -496,7 +497,7 @@ public class ProxyListActivity extends BaseFragment implements NotificationCente
                 }
                 ConnectionsManager.setProxySettings(useProxySettings, SharedConfig.currentProxy.address, SharedConfig.currentProxy.port, SharedConfig.currentProxy.username, SharedConfig.currentProxy.password, SharedConfig.currentProxy.secret);
             } else if (position == proxyAddRow) {
-                presentFragment(new ProxySettingsActivity());
+                presentFragmentAsModal(new ProxySettingsActivity());
             } else if (position == deleteAllRow) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
                 builder.setMessage(LocaleController.getString(R.string.DeleteAllProxiesConfirm));
