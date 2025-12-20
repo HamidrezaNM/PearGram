@@ -71,6 +71,7 @@ import org.telegram.messenger.Utilities;
 import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.ActionBar;
+import org.telegram.ui.ActionBar.ActionBarMenuItem;
 import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.BackDrawable;
 import org.telegram.ui.ActionBar.BaseFragment;
@@ -116,6 +117,7 @@ public class GroupCreateActivity extends BaseFragment implements NotificationCen
     private GroupCreateDividerItemDecoration itemDecoration;
     private AnimatorSet currentDoneButtonAnimation;
     private ImageView floatingButton;
+    private ActionBarMenuItem doneItem;
     private boolean doneButtonVisible;
     private boolean ignoreScrollEvent;
     private FrameLayout buttonsContainer;
@@ -985,6 +987,10 @@ public class GroupCreateActivity extends BaseFragment implements NotificationCen
         });
         listView.setAnimateEmptyView(true, RecyclerListView.EMPTY_VIEW_ANIMATION_TYPE_ALPHA);
 
+        doneItem = actionBar.createMenu().addItem(done_button, getString(R.string.Next));
+        doneItem.setContentDescription(getString(R.string.Next));
+        doneItem.setIconColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlueHeader));
+
         floatingButton = new ImageView(context);
         floatingButton.setScaleType(ImageView.ScaleType.CENTER);
 
@@ -1022,13 +1028,16 @@ public class GroupCreateActivity extends BaseFragment implements NotificationCen
             frameLayout.addView(floatingButton);
         }
         floatingButton.setOnClickListener(v -> onDonePressed(true));
+        floatingButton.setVisibility(View.INVISIBLE);
         if (!doneButtonVisible) {
-            floatingButton.setVisibility(View.INVISIBLE);
+            doneItem.setVisibility(View.GONE);
             floatingButton.setScaleX(0.0f);
             floatingButton.setScaleY(0.0f);
             floatingButton.setAlpha(0.0f);
         }
         floatingButton.setContentDescription(getString(R.string.Next));
+
+        doneItem.setOnClickListener(v -> onDonePressed(true));
 
         if (isCall) {
             buttonsContainer = new FrameLayout(context);

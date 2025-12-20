@@ -222,7 +222,7 @@ public class BackDrawable extends Drawable {
 
         String counterText = Integer.toString(unreadCount);
 
-        int counterWidth = (int) Math.ceil(unreadPaint.measureText(counterText));
+        int counterWidth = (int) Math.max(Math.ceil(unreadPaint.measureText(counterText)), dp(6));
 
         rect.set(dp(-8.5f), dp(-8.5f), counterWidth + dp(1.25f), dp(8.5f));
 
@@ -240,7 +240,7 @@ public class BackDrawable extends Drawable {
         }
 
         if (cancelAlpha != 0) {
-            canvas.drawText(cancelText, dp(0f), dp(0f) - (paint.getFontMetrics().ascent + paint.getFontMetrics().descent) / 2f, cancelPaint);
+            canvas.drawText(cancelText, dp(4f), dp(0f) - (paint.getFontMetrics().ascent + paint.getFontMetrics().descent) / 2f, cancelPaint);
         }
 
         canvas.restore();

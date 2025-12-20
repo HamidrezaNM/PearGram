@@ -154,7 +154,7 @@ public class ProxyListActivity extends BaseFragment implements NotificationCente
             checkImageView.setScaleType(ImageView.ScaleType.CENTER);
             checkImageView.setContentDescription(LocaleController.getString(R.string.Edit));
             addView(checkImageView, LayoutHelper.createFrame(48, 48, (LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT) | Gravity.TOP, 8, 8, 8, 0));
-            checkImageView.setOnClickListener(v -> presentFragment(new ProxySettingsActivity(currentInfo)));
+            checkImageView.setOnClickListener(v -> presentFragmentAsModal(new ProxySettingsActivity(currentInfo)));
 
             checkBox = new CheckBox2(context, 21);
             checkBox.setColor(Theme.key_checkbox, Theme.key_radioBackground, Theme.key_checkboxCheck);
@@ -360,11 +360,11 @@ public class ProxyListActivity extends BaseFragment implements NotificationCente
         actionBar.setBackButtonDrawable(new BackDrawable(false));
         actionBar.setAllowOverlayTitle(true);
         actionBar.setTitle(LocaleController.getString(R.string.ProxySettings));
-        actionBar.getBackDrawable().setCancelButton(true, "Close");
+        actionBar.getBackDrawable().setCancelButton(true, LocaleController.getString(R.string.Close));
         actionBar.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundGray));
-        if (AndroidUtilities.isTablet()) {
-            actionBar.setOccupyStatusBar(false);
-        }
+//        if (AndroidUtilities.isTablet()) {
+        actionBar.setOccupyStatusBar(false);
+//        }
         actionBar.setAllowOverlayTitle(false);
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
@@ -411,7 +411,7 @@ public class ProxyListActivity extends BaseFragment implements NotificationCente
                             editor.commit();
                         }
                     } else {
-                        presentFragment(new ProxySettingsActivity());
+                        presentFragmentAsModal(new ProxySettingsActivity());
                         return;
                     }
                 }

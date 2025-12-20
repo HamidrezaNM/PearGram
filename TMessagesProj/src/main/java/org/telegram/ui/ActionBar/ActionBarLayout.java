@@ -15,6 +15,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -556,6 +557,9 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
     private Path clipPath = new Path();
     private float[] radii = new float[8];
 
+    private final int modalMargin = dp(50);
+
+    @SuppressLint("UseCompatLoadingForDrawables")
     public ActionBarLayout(Context context, boolean main) {
         super(context);
         parentActivity = (Activity) context;
@@ -1177,18 +1181,6 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
             fragmentsStack.remove(fragmentsStack.size() - 1);
             onFragmentStackChanged("onSlideAnimationEnd");
 
-            if(inModalMode) {
-                containerView.setTranslationY(0);
-                containerViewBack.setTranslationY(0);
-                containerViewBack.setScaleX(1);
-                containerViewBack.setScaleY(1);
-
-                FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) containerView.getLayoutParams();
-                lp.topMargin = 0;
-
-                inModalMode = false;
-            }
-
             LayoutContainer temp = containerView;
             containerView = containerViewBack;
             containerViewBack = temp;
@@ -1199,6 +1191,29 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
 
             lastFragment = fragmentsStack.get(fragmentsStack.size() - 1);
             currentActionBar = lastFragment.actionBar;
+
+            if(inModalMode) {
+                containerViewBack.setTranslationY(0);
+
+                FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) containerViewBack.getLayoutParams();
+                lp.topMargin = 0;
+
+                if(!lastFragment.inModalMode) {
+                    containerView.setTranslationY(0);
+                    containerView.setScaleX(1);
+                    containerView.setScaleY(1);
+
+                    FrameLayout.LayoutParams lp2 = (FrameLayout.LayoutParams) containerView.getLayoutParams();
+                    lp2.topMargin = 0;
+
+                    inModalMode = false;
+                } else {
+                    containerViewBack.setTranslationY(-dp(4));
+                    containerViewBack.setScaleX(.9f);
+                    containerViewBack.setScaleY(.9f);
+                }
+            }
+
             lastFragment.onResume();
             lastFragment.onBecomeFullyVisible();
             lastFragment.prepareFragmentToSlide(false, false);
@@ -1330,10 +1345,11 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
                             beginTrackingSent = true;
                         }
                         if(inModalMode) {
+                            BaseFragment previousFragment = fragmentsStack.get(fragmentsStack.size() - 2);
                             dy -= (int) AndroidUtilities.getPixelsInCM(0.1f, false);
                             if(dy > 0) {
                                 containerView.setTranslationY(dy);
-                                containerViewBack.setTranslationY(-dp(4) * (1.0f - (float) dy / containerView.getMeasuredHeight()));
+                                containerViewBack.setTranslationY(((previousFragment.inModalMode ? -modalMargin : 0) -dp(4)) * (1.0f - (float) dy / containerView.getMeasuredHeight()));
                                 containerViewBack.setScaleX(.9f + ((float) dy / containerViewBack.getMeasuredHeight()) * .1f);
                                 containerViewBack.setScaleY(.9f + ((float) dy / containerViewBack.getMeasuredHeight()) * .1f);
                             }
@@ -1397,12 +1413,13 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
                             if (inModalMode) {
                                 distToMove = containerView.getMeasuredHeight() - y;
                                 int duration = Math.max((int) (320.0f / containerView.getMeasuredHeight() * distToMove), 50);
+                                BaseFragment previousFragment = fragmentsStack.get(fragmentsStack.size() - 2);
                                 if (!overrideTransition) {
                                     animatorSet.playTogether(
                                             ObjectAnimator.ofFloat(containerView, View.TRANSLATION_Y, 0f).setDuration(duration),
-                                            ObjectAnimator.ofFloat(containerViewBack, View.TRANSLATION_Y, -dp(4f)).setDuration(duration),
-                                            ObjectAnimator.ofFloat(containerViewBack, View.SCALE_X, (float) .9f).setDuration(duration),
-                                            ObjectAnimator.ofFloat(containerViewBack, View.SCALE_Y, (float) .9f).setDuration(duration)
+                                            ObjectAnimator.ofFloat(containerViewBack, View.TRANSLATION_Y, (previousFragment.inModalMode ? -modalMargin : 0) -dp(4f)).setDuration(duration),
+                                            ObjectAnimator.ofFloat(containerViewBack, View.SCALE_X, .9f).setDuration(duration),
+                                            ObjectAnimator.ofFloat(containerViewBack, View.SCALE_Y, .9f).setDuration(duration)
                                     );
                                 }
                             } else {
@@ -1495,6 +1512,13 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
     }
 
     private void onAnimationEndCheck(boolean byCheck) {
+        if(inModalMode)
+            if(oldFragment != null && oldFragment.inModalMode) {
+                containerViewBack.setTranslationY(-modalMargin - dp(4));
+            } else {
+                containerViewBack.setTranslationY(-dp(4));
+            }
+
         onCloseAnimationEnd();
         onOpenAnimationEnd();
         if (waitingForKeyboardCloseRunnable != null) {
@@ -1520,12 +1544,12 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
         containerViewBack.setScaleX(1.0f);
         containerViewBack.setScaleY(1.0f);
         containerViewBack.setTranslationX(0);
-        containerViewBack.setTranslationY(0);
 
         if(inModalMode) {
-            containerViewBack.setTranslationY(-dp(4));
             containerViewBack.setScaleX(.9f);
             containerViewBack.setScaleY(.9f);
+        } else {
+            containerViewBack.setTranslationY(0);
         }
     }
 
@@ -1693,7 +1717,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
                         containerView.setTranslationX(0);
                         containerViewBack.setTranslationX(0);
                         containerView.setTranslationY(containerView.getMeasuredHeight() * (1.0f - interpolated));
-                        containerViewBack.setTranslationY(dp(4) * (-interpolated));
+                        containerViewBack.setTranslationY(((oldFragment.inModalMode ? modalMargin : 0) + dp(4)) * (-interpolated));
                         containerViewBack.setScaleX(.9f + (0.1f * (1.0f - interpolated)));
                         containerViewBack.setScaleY(.9f + (0.1f * (1.0f - interpolated)));
                     } else {
@@ -1723,7 +1747,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
                         containerViewBack.setTranslationX(0);
                         containerView.setTranslationX(0);
                         containerViewBack.setTranslationY(containerView.getMeasuredHeight() * interpolated);
-                        containerView.setTranslationY(-dp(4) * (1.0f -interpolated));
+                        containerView.setTranslationY(-((newFragment.inModalMode ? modalMargin : 0) + dp(4)) * (1.0f -interpolated));
                         containerView.setScaleX(.9f + (0.1f * interpolated));
                         containerView.setScaleY(.9f + (0.1f * interpolated));
                     } else {
@@ -1737,19 +1761,27 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
                 if (animationProgress < 1) {
                     startLayoutAnimation(open, false, preview, modal);
                 } else {
+                    boolean isPreviousAModal = oldFragment != null && oldFragment.inModalMode && newFragment != null && newFragment.inModalMode;
                     onAnimationEndCheck(false);
 
                     if(!open && modal) {
                         containerViewBack.setTranslationY(0);
-                        containerView.setTranslationY(0);
-                        containerView.setScaleX(1);
-                        containerView.setScaleY(1);
 
-                        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) containerView.getLayoutParams();
+                        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) containerViewBack.getLayoutParams();
                         lp.topMargin = 0;
 
-                        FrameLayout.LayoutParams lp2 = (FrameLayout.LayoutParams) containerViewBack.getLayoutParams();
-                        lp2.topMargin = 0;
+                        if(!isPreviousAModal) {
+                            containerView.setTranslationY(0);
+                            containerView.setScaleX(1);
+                            containerView.setScaleY(1);
+
+                            FrameLayout.LayoutParams lp2 = (FrameLayout.LayoutParams) containerView.getLayoutParams();
+                            lp2.topMargin = 0;
+                        } else {
+                            containerViewBack.setTranslationY(-dp(4));
+                            containerViewBack.setScaleX(.9f);
+                            containerViewBack.setScaleY(.9f);
+                        }
                     }
                 }
             }
@@ -1916,10 +1948,12 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
         containerView.setTranslationY(0);
 
         FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) containerView.getLayoutParams();
-        lp.topMargin = modal ? dp(50) : 0;
+        lp.topMargin = modal ? modalMargin : 0;
 
-        FrameLayout.LayoutParams lp2 = (FrameLayout.LayoutParams) containerViewBack.getLayoutParams();
-        lp2.topMargin = 0;
+        if(lastFragment != null) {
+            FrameLayout.LayoutParams lp2 = (FrameLayout.LayoutParams) containerViewBack.getLayoutParams();
+            lp2.topMargin = (modal && lastFragment.inModalMode) ? modalMargin : 0;
+        }
 
         if (preview) {
             fragmentView.setOutlineProvider(new ViewOutlineProvider() {
@@ -2312,7 +2346,8 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
         fragment.onFragmentDestroy();
         fragment.setParentLayout(null);
         fragmentsStack.remove(fragment);
-        containerViewBack.setVisibility(View.INVISIBLE);
+        if(!inModalMode)
+            containerViewBack.setVisibility(View.INVISIBLE);
         containerViewBack.setTranslationY(0);
         bringChildToFront(containerView);
         if (sheetContainer != null) {
@@ -2604,7 +2639,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
             }
         }
 
-        if(inModalMode)
+        if(inModalMode && !(previousFragment != null && previousFragment.inModalMode))
             inModalMode = false;
 
         currentFragment.onFragmentClosed();

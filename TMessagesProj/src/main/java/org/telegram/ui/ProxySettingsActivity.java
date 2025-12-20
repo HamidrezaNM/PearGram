@@ -197,9 +197,10 @@ public class ProxySettingsActivity extends BaseFragment {
         actionBar.setTitle(LocaleController.getString(R.string.ProxyDetails));
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
         actionBar.setAllowOverlayTitle(false);
-        if (AndroidUtilities.isTablet()) {
-            actionBar.setOccupyStatusBar(false);
-        }
+        actionBar.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundGray));
+//        if (AndroidUtilities.isTablet()) {
+        actionBar.setOccupyStatusBar(false);
+//        }
 
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
@@ -251,8 +252,9 @@ public class ProxySettingsActivity extends BaseFragment {
             }
         });
 
-        doneItem = actionBar.createMenu().addItemWithWidth(done_button, R.drawable.ic_ab_done, AndroidUtilities.dp(56));
+        doneItem = actionBar.createMenu().addItem(done_button, LocaleController.getString(R.string.Done));
         doneItem.setContentDescription(LocaleController.getString(R.string.Done));
+        doneItem.setIconColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlueHeader));
 
         fragmentView = new FrameLayout(context);
         FrameLayout frameLayout = (FrameLayout) fragmentView;
